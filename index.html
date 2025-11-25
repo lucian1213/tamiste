@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>타미스테 - Mystery Games</title>
+    <title>타미스테 - MYSTERY GAMES</title>
     <style>
         * {
             margin: 0;
@@ -132,22 +132,13 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
         }
 
-        /* 줄거리 플레이스홀더 */
-        .story-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        /* 줄거리 이미지 세로 연결 */
+        .story-img {
+            margin-bottom: 10px;
         }
 
-        .story-placeholder p {
-            margin: 10px 0;
-            color: #333333;
+        .story-img:last-child {
+            margin-bottom: 0;
         }
 
         /* 애니메이션 */
@@ -240,12 +231,8 @@
                 border-radius: 8px;
             }
 
-            .story-placeholder {
-                padding: 20px;
-            }
-
-            .story-placeholder p {
-                font-size: 0.9em;
+            .story-img {
+                margin-bottom: 8px;
             }
         }
     </style>
@@ -271,11 +258,8 @@
         
         <!-- 줄거리 이미지 (초기에는 숨김) -->
         <div class="image-container hidden" id="storyImage">
-            <img src="story.png" alt="타미 스테 줄거리">
-            <div class="story-placeholder">
-                <p>줄거리 이미지가 여기에 표시됩니다</p>
-                <p style="font-size: 0.9em; color: #999;">줄거리 이미지를 준비해주세요</p>
-            </div>
+            <img src="story1.png" alt="타미스테 줄거리 1" class="story-img">
+            <img src="story2.png" alt="타미스테 줄거리 2" class="story-img">
         </div>
     </main>
 
