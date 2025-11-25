@@ -416,6 +416,13 @@
             border-color: #333333;
         }
 
+        .input-hint {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.85em;
+            color: #999999;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 15px;
@@ -733,6 +740,11 @@
                 padding: 10px;
             }
 
+            .input-hint {
+                font-size: 0.75em;
+                margin-top: 4px;
+            }
+
             .submit-btn {
                 padding: 12px;
                 font-size: 1em;
@@ -856,17 +868,18 @@
                         <h4>예약자 정보</h4>
                         <div class="form-group">
                             <label>이름</label>
-                            <input type="text" id="nameInput" placeholder="이름을 입력하세요">
+                            <input type="text" id="nameInput" placeholder="이름을 입력하세요" oninput="checkFormCompletion()">
                         </div>
                         <div class="form-group">
                             <label>연락처</label>
-                            <input type="tel" id="phoneInput" placeholder="010-0000-0000">
+                            <input type="tel" id="phoneInput" placeholder="01000000000" maxlength="11" oninput="validatePhoneNumber(this); checkFormCompletion()">
+                            <span class="input-hint">숫자만 입력해주세요 (11자리)</span>
                         </div>
                         
                         <!-- 개인정보 동의 -->
                         <div class="privacy-agreement">
                             <label class="checkbox-container">
-                                <input type="checkbox" id="privacyCheck" onchange="toggleSubmitButton()">
+                                <input type="checkbox" id="privacyCheck" onchange="checkFormCompletion()">
                                 <span class="checkmark"></span>
                                 <span class="agreement-text">
                                     개인정보 수집 및 이용에 동의합니다. 
@@ -1206,12 +1219,21 @@
             }, 100);
         }
 
-        // 예약 완료 버튼 토글
-        function toggleSubmitButton() {
-            const checkbox = document.getElementById('privacyCheck');
+        // 전화번호 숫자만 입력 가능
+        function validatePhoneNumber(input) {
+            // 숫자가 아닌 문자 제거
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        // 폼 완성도 체크 - 모든 필드가 채워져야 버튼 활성화
+        function checkFormCompletion() {
+            const name = document.getElementById('nameInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
+            const privacyCheck = document.getElementById('privacyCheck').checked;
             const submitBtn = document.getElementById('submitBtn');
             
-            if (checkbox.checked) {
+            // 이름, 연락처(11자리), 개인정보 동의 모두 충족 시 활성화
+            if (name && phone.length === 11 && privacyCheck) {
                 submitBtn.disabled = false;
             } else {
                 submitBtn.disabled = true;
@@ -1226,12 +1248,22 @@
 
         // 예약 완료
         function submitReservation() {
-            const name = document.getElementById('nameInput').value;
-            const phone = document.getElementById('phoneInput').value;
+            const name = document.getElementById('nameInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
             const privacyCheck = document.getElementById('privacyCheck').checked;
             
-            if (!name || !phone) {
-                alert('이름과 연락처를 입력해주세요.');
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+            
+            if (!phone) {
+                alert('연락처를 입력해주세요.');
+                return;
+            }
+            
+            if (phone.length !== 11) {
+                alert('연락처는 11자리 숫자로 입력해주세요.\n예: 01012345678');
                 return;
             }
             
@@ -1245,13 +1277,16 @@
                 return;
             }
             
-            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${phone}\n인원: 6명`);
+            // 전화번호 포맷팅 (표시용)
+            const formattedPhone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+            
+            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${formattedPhone}\n인원: 6명`);
             
             // 폼 초기화
             document.getElementById('nameInput').value = '';
             document.getElementById('phoneInput').value = '';
             document.getElementById('privacyCheck').checked = false;
-            toggleSubmitButton();
+            checkFormCompletion();
             
             // 메인 화면으로 돌아가기
             toggleContent();
