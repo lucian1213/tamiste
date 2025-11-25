@@ -141,6 +141,219 @@
             margin-bottom: 0;
         }
 
+        /* 예약 페이지 */
+        .reservation-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: scale(1);
+        }
+
+        .reservation-container.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .reservation-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .reservation-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #333333;
+        }
+
+        /* 달력 헤더 */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .calendar-header h3 {
+            font-size: 1.3em;
+            color: #333333;
+        }
+
+        .month-btn {
+            background: #ffffff;
+            border: 2px solid #333333;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .month-btn:hover {
+            background: #333333;
+            color: #ffffff;
+        }
+
+        /* 달력 */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            color: #666666;
+            font-size: 0.9em;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .day:hover {
+            background: #f5f5f5;
+            border-color: #333333;
+        }
+
+        .day.selected {
+            background: #333333;
+            color: #ffffff;
+            border-color: #333333;
+        }
+
+        .day.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .day.empty {
+            border: none;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* 선택된 날짜 정보 */
+        .selected-info {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .selected-info h4 {
+            margin-bottom: 20px;
+            color: #333333;
+            font-size: 1.2em;
+        }
+
+        /* 시간 선택 */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .time-slot {
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .time-slot:hover {
+            border-color: #333333;
+            background: #f5f5f5;
+        }
+
+        .time-slot.selected {
+            background: #333333;
+            color: #ffffff;
+            border-color: #333333;
+        }
+
+        /* 예약 폼 */
+        .reservation-form {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .reservation-form h4 {
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #333333;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #333333;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
         /* 애니메이션 */
         @keyframes fadeIn {
             from {
@@ -200,6 +413,22 @@
             .image-container {
                 max-width: 100%;
             }
+
+            .reservation-box {
+                padding: 30px 20px;
+            }
+
+            .reservation-box h2 {
+                font-size: 1.5em;
+            }
+
+            .calendar {
+                gap: 5px;
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* 반응형 디자인 - 모바일 */
@@ -234,6 +463,60 @@
             .story-img {
                 margin-bottom: 8px;
             }
+
+            .reservation-box {
+                padding: 20px 15px;
+            }
+
+            .reservation-box h2 {
+                font-size: 1.3em;
+                margin-bottom: 20px;
+            }
+
+            .calendar-header h3 {
+                font-size: 1.1em;
+            }
+
+            .month-btn {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+
+            .calendar {
+                gap: 4px;
+            }
+
+            .weekday {
+                font-size: 0.8em;
+                padding: 8px 5px;
+            }
+
+            .day {
+                font-size: 0.9em;
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .time-slot {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+
+            .selected-info h4 {
+                font-size: 1em;
+            }
+
+            .form-group input {
+                padding: 10px;
+            }
+
+            .submit-btn {
+                padding: 12px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -245,7 +528,7 @@
         </div>
         <div class="header-buttons">
             <button class="toggle-btn" id="toggleBtn" onclick="toggleContent()">줄거리 보기</button>
-            <a href="reservation.html" class="reserve-btn">예약하기</a>
+            <button class="reserve-btn" onclick="showReservation()">예약하기</button>
         </div>
     </header>
 
@@ -261,21 +544,148 @@
             <img src="story1.png" alt="타미스테 줄거리 1" class="story-img">
             <img src="story2.png" alt="타미스테 줄거리 2" class="story-img">
         </div>
+
+        <!-- 예약 페이지 (초기에는 숨김) -->
+        <div class="reservation-container hidden" id="reservationSection">
+            <div class="reservation-box">
+                <h2>타미 스테 예약</h2>
+                
+                <!-- 달력 헤더 -->
+                <div class="calendar-header">
+                    <button class="month-btn" onclick="changeMonth(-1)">◀</button>
+                    <h3 id="currentMonth">2025년 1월</h3>
+                    <button class="month-btn" onclick="changeMonth(1)">▶</button>
+                </div>
+
+                <!-- 달력 -->
+                <div class="calendar">
+                    <div class="weekday">일</div>
+                    <div class="weekday">월</div>
+                    <div class="weekday">화</div>
+                    <div class="weekday">수</div>
+                    <div class="weekday">목</div>
+                    <div class="weekday">금</div>
+                    <div class="weekday">토</div>
+                    <div id="calendarDays"></div>
+                </div>
+
+                <!-- 선택된 날짜 정보 -->
+                <div class="selected-info" id="selectedInfo" style="display: none;">
+                    <h4>선택한 날짜: <span id="selectedDate"></span></h4>
+                    
+                    <!-- 시간 선택 -->
+                    <div class="time-slots">
+                        <div class="time-slot" onclick="selectTime('10:00')">10:00</div>
+                        <div class="time-slot" onclick="selectTime('13:00')">13:00</div>
+                        <div class="time-slot" onclick="selectTime('16:00')">16:00</div>
+                        <div class="time-slot" onclick="selectTime('19:00')">19:00</div>
+                    </div>
+
+                    <!-- 예약자 정보 -->
+                    <div class="reservation-form" id="reservationForm" style="display: none;">
+                        <h4>예약자 정보</h4>
+                        <div class="form-group">
+                            <label>이름</label>
+                            <input type="text" id="nameInput" placeholder="이름을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label>연락처</label>
+                            <input type="tel" id="phoneInput" placeholder="010-0000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>인원</label>
+                            <input type="number" id="peopleInput" value="6" min="1" max="6">
+                        </div>
+                        <button class="submit-btn" onclick="submitReservation()">예약 완료</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
         let isStoryView = false;
+        let isReservationView = false;
+        let currentYear = 2025;
+        let currentMonth = 0; // 0 = 1월
+        let selectedDateStr = '';
+        let selectedTimeStr = '';
+
+        // 헤더 버튼 업데이트
+        function updateHeaderButtons() {
+            const toggleBtn = document.getElementById('toggleBtn');
+            const reserveBtn = document.querySelector('.reserve-btn');
+            
+            if (isReservationView) {
+                toggleBtn.style.display = 'inline-block';
+                toggleBtn.textContent = '메인 화면 보기';
+                reserveBtn.style.display = 'none';
+            } else if (isStoryView) {
+                toggleBtn.style.display = 'inline-block';
+                toggleBtn.textContent = '메인 화면 보기';
+                reserveBtn.style.display = 'inline-block';
+            } else {
+                toggleBtn.style.display = 'inline-block';
+                toggleBtn.textContent = '줄거리 보기';
+                reserveBtn.style.display = 'inline-block';
+            }
+        }
+
+        // 예약 페이지로 이동
+        function showReservation() {
+            const mainImage = document.getElementById('mainImage');
+            const storyImage = document.getElementById('storyImage');
+            const reservationSection = document.getElementById('reservationSection');
+
+            window.scrollTo(0, 0);
+
+            mainImage.classList.add('fade-out');
+            storyImage.classList.add('fade-out');
+
+            setTimeout(() => {
+                mainImage.classList.add('hidden');
+                storyImage.classList.add('hidden');
+                mainImage.classList.remove('fade-out');
+                storyImage.classList.remove('fade-out');
+
+                reservationSection.classList.remove('hidden');
+                reservationSection.classList.add('fade-in');
+
+                isReservationView = true;
+                isStoryView = false;
+                updateHeaderButtons();
+                renderCalendar();
+            }, 500);
+        }
 
         // 이미지 전환 함수
         function toggleContent() {
             const mainImage = document.getElementById('mainImage');
             const storyImage = document.getElementById('storyImage');
+            const reservationSection = document.getElementById('reservationSection');
             const toggleBtn = document.getElementById('toggleBtn');
 
-            // 스크롤을 맨 위로 즉시 이동
             window.scrollTo(0, 0);
 
-            if (!isStoryView) {
+            if (isReservationView) {
+                // 예약 -> 메인으로 전환
+                reservationSection.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    reservationSection.classList.add('hidden');
+                    reservationSection.classList.remove('fade-out', 'fade-in');
+                    
+                    mainImage.classList.remove('hidden');
+                    mainImage.classList.add('fade-in');
+                    
+                    isReservationView = false;
+                    updateHeaderButtons();
+                    
+                    setTimeout(() => {
+                        mainImage.classList.remove('fade-in');
+                    }, 500);
+                }, 500);
+            } else if (!isStoryView) {
                 // 메인 -> 줄거리로 전환
                 mainImage.classList.add('fade-out');
                 
@@ -286,8 +696,8 @@
                     storyImage.classList.remove('hidden');
                     storyImage.classList.add('fade-in');
                     
-                    toggleBtn.textContent = '메인 화면 보기';
                     isStoryView = true;
+                    updateHeaderButtons();
                 }, 500);
             } else {
                 // 줄거리 -> 메인으로 전환
@@ -300,15 +710,139 @@
                     mainImage.classList.remove('hidden');
                     mainImage.classList.add('fade-in');
                     
-                    toggleBtn.textContent = '줄거리 보기';
                     isStoryView = false;
+                    updateHeaderButtons();
                     
-                    // fade-in 클래스 제거 (다음 전환을 위해)
                     setTimeout(() => {
                         mainImage.classList.remove('fade-in');
                     }, 500);
                 }, 500);
             }
+        }
+
+        // 달력 렌더링
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendarDays');
+            const currentMonthEl = document.getElementById('currentMonth');
+            
+            const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                              '7월', '8월', '9월', '10월', '11월', '12월'];
+            
+            currentMonthEl.textContent = `${currentYear}년 ${monthNames[currentMonth]}`;
+            
+            // 해당 월의 첫날과 마지막날
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            calendarDays.innerHTML = '';
+            
+            // 빈 칸 추가
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day empty';
+                calendarDays.appendChild(emptyDay);
+            }
+            
+            // 날짜 추가
+            for (let date = 1; date <= lastDate; date++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day';
+                dayEl.textContent = date;
+                dayEl.onclick = () => selectDate(date);
+                
+                // 오늘 이전 날짜는 비활성화
+                const today = new Date();
+                const currentDate = new Date(currentYear, currentMonth, date);
+                if (currentDate < today.setHours(0, 0, 0, 0)) {
+                    dayEl.classList.add('disabled');
+                }
+                
+                calendarDays.appendChild(dayEl);
+            }
+        }
+
+        // 월 변경
+        function changeMonth(delta) {
+            currentMonth += delta;
+            
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            renderCalendar();
+            
+            // 선택 초기화
+            document.getElementById('selectedInfo').style.display = 'none';
+        }
+
+        // 날짜 선택
+        function selectDate(date) {
+            // 이전 선택 해제
+            document.querySelectorAll('.day').forEach(day => {
+                day.classList.remove('selected');
+            });
+            
+            // 새로운 선택
+            event.target.classList.add('selected');
+            
+            const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
+                              '7월', '8월', '9월', '10월', '11월', '12월'];
+            
+            selectedDateStr = `${currentYear}년 ${monthNames[currentMonth]} ${date}일`;
+            document.getElementById('selectedDate').textContent = selectedDateStr;
+            document.getElementById('selectedInfo').style.display = 'block';
+            
+            // 시간 선택 초기화
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            document.getElementById('reservationForm').style.display = 'none';
+        }
+
+        // 시간 선택
+        function selectTime(time) {
+            // 이전 선택 해제
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // 새로운 선택
+            event.target.classList.add('selected');
+            selectedTimeStr = time;
+            
+            // 예약 폼 표시
+            document.getElementById('reservationForm').style.display = 'block';
+        }
+
+        // 예약 완료
+        function submitReservation() {
+            const name = document.getElementById('nameInput').value;
+            const phone = document.getElementById('phoneInput').value;
+            const people = document.getElementById('peopleInput').value;
+            
+            if (!name || !phone) {
+                alert('이름과 연락처를 입력해주세요.');
+                return;
+            }
+            
+            if (!selectedDateStr || !selectedTimeStr) {
+                alert('날짜와 시간을 선택해주세요.');
+                return;
+            }
+            
+            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${phone}\n인원: ${people}명`);
+            
+            // 폼 초기화
+            document.getElementById('nameInput').value = '';
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('peopleInput').value = '6';
+            
+            // 메인 화면으로 돌아가기
+            toggleContent();
         }
 
         // 스크롤 시 헤더 그림자 효과
@@ -320,6 +854,9 @@
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
             }
         });
+
+        // 초기화
+        updateHeaderButtons();
     </script>
 </body>
 </html>
