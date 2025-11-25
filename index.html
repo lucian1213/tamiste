@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타미 스테 - MYSTERY GAMES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+            background: #ffffff;
+            color: #333333;
+            overflow-x: hidden;
+        }
+
+        /* 헤더/네비게이션 */
+        .header {
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .reserve-btn {
+            padding: 12px 35px;
+            background: #333333;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .reserve-btn:hover {
+            background: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .reserve-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            margin-top: 80px;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* 이미지 컨테이너 */
+        .image-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 반응형 디자인 - 태블릿 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .reserve-btn {
+                padding: 10px 25px;
+                font-size: 0.95em;
+            }
+
+            .main-container {
+                margin-top: 70px;
+                padding: 30px 15px;
+            }
+
+            .image-container {
+                max-width: 100%;
+            }
+        }
+
+        /* 반응형 디자인 - 모바일 */
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 15px;
+            }
+
+            .reserve-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .main-container {
+                margin-top: 60px;
+                padding: 20px 10px;
+            }
+
+            .image-container img {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <a href="reservation.html" class="reserve-btn">예약하기</a>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-container">
+        <div class="image-container">
+            <img src="main.png" alt="타미 스테">
+        </div>
+    </main>
+
+    <script>
+        // 스크롤 시 헤더 그림자 효과
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 10) {
+                header.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+            }
+        });
+    </script>
+</body>
+</html>
