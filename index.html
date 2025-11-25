@@ -272,6 +272,9 @@
             const storyImage = document.getElementById('storyImage');
             const toggleBtn = document.getElementById('toggleBtn');
 
+            // 스크롤을 맨 위로 이동
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             if (!isStoryView) {
                 // 메인 -> 줄거리로 전환
                 mainImage.classList.add('fade-out');
