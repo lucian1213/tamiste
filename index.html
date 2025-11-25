@@ -898,6 +898,14 @@
             
             // 예약 폼 숨기기
             document.getElementById('reservationForm').style.display = 'none';
+            
+            // 시간 선택 영역으로 부드럽게 스크롤
+            setTimeout(() => {
+                const timeSlotsElement = document.getElementById('timeSlots');
+                if (timeSlotsElement && timeSlotsElement.children.length > 0) {
+                    timeSlotsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
         }
 
         // 시간 선택
@@ -913,6 +921,22 @@
             
             // 예약 폼 표시
             document.getElementById('reservationForm').style.display = 'block';
+            
+            // 예약 폼으로 부드럽게 스크롤
+            setTimeout(() => {
+                const formElement = document.getElementById('reservationForm');
+                if (formElement) {
+                    formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // 이름 입력 필드에 포커스
+                    setTimeout(() => {
+                        const nameInput = document.getElementById('nameInput');
+                        if (nameInput) {
+                            nameInput.focus();
+                        }
+                    }, 500);
+                }
+            }, 100);
         }
 
         // 예약 완료
