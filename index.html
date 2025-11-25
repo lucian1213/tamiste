@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타미스테 - MYSTERY GAMES</title>
+    <script>
+        // 스크롤 복원 비활성화 (가장 먼저 실행)
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        // 즉시 스크롤 맨 위로
+        window.scrollTo(0, 0);
+    </script>
     <style>
         * {
             margin: 0;
@@ -121,6 +129,8 @@
             opacity: 1;
             transition: opacity 0.5s ease, transform 0.5s ease;
             transform: scale(1);
+            position: relative;
+            z-index: 1;
         }
 
         .image-container.hidden {
@@ -128,6 +138,8 @@
             transform: scale(0.95);
             position: absolute;
             pointer-events: none;
+            visibility: hidden;
+            z-index: -1;
         }
 
         .image-container img {
@@ -155,6 +167,8 @@
             opacity: 1;
             transition: opacity 0.5s ease, transform 0.5s ease;
             transform: scale(1);
+            position: relative;
+            z-index: 1;
         }
 
         .reservation-container.hidden {
@@ -162,6 +176,8 @@
             transform: scale(0.95);
             position: absolute;
             pointer-events: none;
+            visibility: hidden;
+            z-index: -1;
         }
 
         .reservation-box {
@@ -535,7 +551,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="window.scrollTo(0, 0);">
     <!-- 헤더 -->
     <header class="header">
         <div class="logo">
@@ -939,13 +955,21 @@
         // 초기화
         updateHeaderButtons();
 
-        // 페이지 로드 시 스크롤을 맨 위로
+        // 페이지 로드 시 스크롤을 맨 위로 (여러 단계에서 실행)
+        window.scrollTo(0, 0);
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            window.scrollTo(0, 0);
+        });
+        
         window.addEventListener('load', function() {
             window.scrollTo(0, 0);
         });
 
-        // 페이지 진입 시에도 스크롤 맨 위로
-        window.scrollTo(0, 0);
+        // 페이지 표시 시에도 스크롤 맨 위로 (뒤로가기 대비)
+        window.addEventListener('pageshow', function() {
+            window.scrollTo(0, 0);
+        });
     </script>
 </body>
 </html>
