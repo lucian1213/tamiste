@@ -290,7 +290,7 @@
             font-weight: 600;
         }
 
-        .time-slot:hover {
+        .time-slot:hover:not(.disabled) {
             border-color: #333333;
             background: #f5f5f5;
         }
@@ -299,6 +299,12 @@
             background: #333333;
             color: #ffffff;
             border-color: #333333;
+        }
+
+        .time-slot.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         /* 예약 폼 */
@@ -583,12 +589,7 @@
                     <h4>선택한 날짜: <span id="selectedDate"></span></h4>
                     
                     <!-- 시간 선택 -->
-                    <div class="time-slots">
-                        <div class="time-slot" onclick="selectTime('10:00', this)">10:00</div>
-                        <div class="time-slot" onclick="selectTime('13:00', this)">13:00</div>
-                        <div class="time-slot" onclick="selectTime('16:00', this)">16:00</div>
-                        <div class="time-slot" onclick="selectTime('19:00', this)">19:00</div>
-                    </div>
+                    <div class="time-slots" id="timeSlots"></div>
 
                     <!-- 예약자 정보 -->
                     <div class="reservation-form" id="reservationForm" style="display: none;">
@@ -622,6 +623,15 @@
         
         let selectedDateStr = '';
         let selectedTimeStr = '';
+
+        // 예약 가능한 날짜와 시간
+        const availableSlots = {
+            '2025-12-6': ['13:00', '18:00'],
+            '2025-12-13': ['13:00', '18:00']
+        };
+
+        // 모든 시간 슬롯
+        const allTimeSlots = ['10:00', '13:00', '16:00', '18:00', '19:00'];
 
         // 헤더 버튼 업데이트
         function updateHeaderButtons() {
@@ -764,13 +774,11 @@
                     selectDate(date, this);
                 };
                 
-                // 오늘 이전 날짜는 비활성화
-                const todayDate = new Date();
-                todayDate.setHours(0, 0, 0, 0);
-                const currentDate = new Date(currentYear, currentMonth, date);
-                currentDate.setHours(0, 0, 0, 0);
+                // 예약 가능한 날짜 체크
+                const dateKey = `${currentYear}-${currentMonth + 1}-${date}`;
+                const isAvailable = availableSlots.hasOwnProperty(dateKey);
                 
-                if (currentDate < todayDate) {
+                if (!isAvailable) {
                     dayEl.classList.add('disabled');
                 }
                 
@@ -818,15 +826,42 @@
             document.getElementById('selectedDate').textContent = selectedDateStr;
             document.getElementById('selectedInfo').style.display = 'block';
             
-            // 시간 선택 초기화
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
+            // 해당 날짜의 가능한 시간 슬롯 표시
+            const dateKey = `${currentYear}-${currentMonth + 1}-${date}`;
+            const availableTimes = availableSlots[dateKey] || [];
+            
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            timeSlotsContainer.innerHTML = '';
+            
+            allTimeSlots.forEach(time => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = time;
+                
+                if (availableTimes.includes(time)) {
+                    // 예약 가능한 시간
+                    timeSlot.onclick = function() {
+                        selectTime(time, this);
+                    };
+                } else {
+                    // 예약 불가능한 시간
+                    timeSlot.classList.add('disabled');
+                }
+                
+                timeSlotsContainer.appendChild(timeSlot);
             });
+            
+            // 예약 폼 숨기기
             document.getElementById('reservationForm').style.display = 'none';
         }
 
         // 시간 선택
         function selectTime(time, element) {
+            // disabled 시간은 선택 불가
+            if (element.classList.contains('disabled')) {
+                return;
+            }
+            
             // 이전 선택 해제
             document.querySelectorAll('.time-slot').forEach(slot => {
                 slot.classList.remove('selected');
