@@ -379,6 +379,28 @@
             border-color: #333333;
         }
 
+        .time-slot.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #f5f5f5;
+            color: #999999;
+        }
+
+        /* 시간 비활성화 안내 */
+        .time-notice {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #856404;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
         /* 예약 폼 */
         .reservation-form {
             margin-top: 30px;
@@ -730,6 +752,12 @@
             .time-slot {
                 padding: 12px;
                 font-size: 0.9em;
+            }
+
+            .time-notice {
+                padding: 15px;
+                font-size: 0.85em;
+                margin-top: 10px;
             }
 
             .selected-info h4 {
@@ -1105,7 +1133,7 @@
                     selectDate(date, this);
                 };
                 
-                // 예약 가능한 날짜 체크
+                // 예약 가능한 날짜 체크 (6일, 13일만)
                 const dateKey = `${currentYear}-${currentMonth + 1}-${date}`;
                 const isAvailable = availableSlots.hasOwnProperty(dateKey);
                 
@@ -1157,24 +1185,29 @@
             document.getElementById('selectedDate').textContent = selectedDateStr;
             document.getElementById('selectedInfo').style.display = 'block';
             
-            // 해당 날짜의 가능한 시간 슬롯 표시
+            // 해당 날짜의 시간 슬롯 표시 (모두 비활성화)
             const dateKey = `${currentYear}-${currentMonth + 1}-${date}`;
             const availableTimes = availableSlots[dateKey] || [];
             
             const timeSlotsContainer = document.getElementById('timeSlots');
             timeSlotsContainer.innerHTML = '';
             
-            // 가능한 시간만 표시
-            availableTimes.forEach(time => {
+            // 시간 슬롯 표시 (현재는 모두 비활성화)
+            const allTimes = ['13:00', '18:00'];
+            allTimes.forEach(time => {
                 const timeSlot = document.createElement('div');
-                timeSlot.className = 'time-slot';
+                timeSlot.className = 'time-slot disabled';
                 timeSlot.textContent = time;
-                timeSlot.onclick = function() {
-                    selectTime(time, this);
-                };
+                timeSlot.title = '현재 예약이 마감되었습니다';
                 
                 timeSlotsContainer.appendChild(timeSlot);
             });
+            
+            // 비활성화 안내 메시지 추가
+            const noticeDiv = document.createElement('div');
+            noticeDiv.className = 'time-notice';
+            noticeDiv.innerHTML = '⚠️ 현재 예약이 마감되었습니다. 추후 예약 오픈 시 다시 안내드리겠습니다.';
+            timeSlotsContainer.appendChild(noticeDiv);
             
             // 예약 폼 숨기기
             document.getElementById('reservationForm').style.display = 'none';
@@ -1182,7 +1215,7 @@
             // 시간 선택 영역으로 부드럽게 스크롤
             setTimeout(() => {
                 const timeSlotsElement = document.getElementById('timeSlots');
-                if (timeSlotsElement && timeSlotsElement.children.length > 0) {
+                if (timeSlotsElement) {
                     timeSlotsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
