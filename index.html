@@ -672,14 +672,15 @@
             const storyImage = document.getElementById('storyImage');
             const reservationSection = document.getElementById('reservationSection');
 
-            window.scrollTo(0, 0);
-
             // 현재 보이는 화면만 페이드 아웃
             if (isStoryView) {
                 // 줄거리 화면에서 예약으로
                 storyImage.classList.add('fade-out');
                 
                 setTimeout(() => {
+                    // fade-out 후 스크롤 이동
+                    window.scrollTo(0, 0);
+                    
                     storyImage.classList.add('hidden');
                     storyImage.classList.remove('fade-out');
 
@@ -701,6 +702,9 @@
                 mainImage.classList.add('fade-out');
 
                 setTimeout(() => {
+                    // fade-out 후 스크롤 이동
+                    window.scrollTo(0, 0);
+                    
                     mainImage.classList.add('hidden');
                     mainImage.classList.remove('fade-out');
 
@@ -726,13 +730,14 @@
             const reservationSection = document.getElementById('reservationSection');
             const toggleBtn = document.getElementById('toggleBtn');
 
-            window.scrollTo(0, 0);
-
             if (isReservationView) {
                 // 예약 -> 메인으로 전환
                 reservationSection.classList.add('fade-out');
                 
                 setTimeout(() => {
+                    // fade-out 후 스크롤 이동
+                    window.scrollTo(0, 0);
+                    
                     reservationSection.classList.add('hidden');
                     reservationSection.classList.remove('fade-out', 'fade-in');
                     
@@ -755,6 +760,9 @@
                 mainImage.classList.add('fade-out');
                 
                 setTimeout(() => {
+                    // fade-out 후 스크롤 이동
+                    window.scrollTo(0, 0);
+                    
                     mainImage.classList.add('hidden');
                     mainImage.classList.remove('fade-out');
                     
@@ -773,6 +781,9 @@
                 storyImage.classList.add('fade-out');
                 
                 setTimeout(() => {
+                    // fade-out 후 스크롤 이동
+                    window.scrollTo(0, 0);
+                    
                     storyImage.classList.add('hidden');
                     storyImage.classList.remove('fade-out', 'fade-in');
                     
