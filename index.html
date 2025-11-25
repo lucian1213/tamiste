@@ -16,6 +16,12 @@
             background: #ffffff;
             color: #333333;
             overflow-x: hidden;
+            scroll-behavior: auto;
+        }
+
+        /* 페이지 로드 시 스크롤 위치 고정 */
+        html {
+            scroll-behavior: auto;
         }
 
         /* 헤더/네비게이션 */
@@ -652,23 +658,49 @@
 
             window.scrollTo(0, 0);
 
-            mainImage.classList.add('fade-out');
-            storyImage.classList.add('fade-out');
+            // 현재 보이는 화면만 페이드 아웃
+            if (isStoryView) {
+                // 줄거리 화면에서 예약으로
+                storyImage.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    storyImage.classList.add('hidden');
+                    storyImage.classList.remove('fade-out');
 
-            setTimeout(() => {
-                mainImage.classList.add('hidden');
-                storyImage.classList.add('hidden');
-                mainImage.classList.remove('fade-out');
-                storyImage.classList.remove('fade-out');
+                    reservationSection.classList.remove('hidden');
+                    reservationSection.classList.add('fade-in');
 
-                reservationSection.classList.remove('hidden');
-                reservationSection.classList.add('fade-in');
+                    isReservationView = true;
+                    isStoryView = false;
+                    updateHeaderButtons();
+                    renderCalendar();
+                    
+                    // fade-in 클래스 제거
+                    setTimeout(() => {
+                        reservationSection.classList.remove('fade-in');
+                    }, 500);
+                }, 500);
+            } else {
+                // 메인 화면에서 예약으로
+                mainImage.classList.add('fade-out');
 
-                isReservationView = true;
-                isStoryView = false;
-                updateHeaderButtons();
-                renderCalendar();
-            }, 500);
+                setTimeout(() => {
+                    mainImage.classList.add('hidden');
+                    mainImage.classList.remove('fade-out');
+
+                    reservationSection.classList.remove('hidden');
+                    reservationSection.classList.add('fade-in');
+
+                    isReservationView = true;
+                    updateHeaderButtons();
+                    renderCalendar();
+                    
+                    // fade-in 클래스 제거
+                    setTimeout(() => {
+                        reservationSection.classList.remove('fade-in');
+                    }, 500);
+                }, 500);
+            }
         }
 
         // 이미지 전환 함수
@@ -688,6 +720,10 @@
                     reservationSection.classList.add('hidden');
                     reservationSection.classList.remove('fade-out', 'fade-in');
                     
+                    // 줄거리 이미지도 확실히 숨김
+                    storyImage.classList.add('hidden');
+                    storyImage.classList.remove('fade-in', 'fade-out');
+                    
                     mainImage.classList.remove('hidden');
                     mainImage.classList.add('fade-in');
                     
@@ -706,6 +742,10 @@
                     mainImage.classList.add('hidden');
                     mainImage.classList.remove('fade-out');
                     
+                    // 예약 화면도 확실히 숨김
+                    reservationSection.classList.add('hidden');
+                    reservationSection.classList.remove('fade-in', 'fade-out');
+                    
                     storyImage.classList.remove('hidden');
                     storyImage.classList.add('fade-in');
                     
@@ -719,6 +759,10 @@
                 setTimeout(() => {
                     storyImage.classList.add('hidden');
                     storyImage.classList.remove('fade-out', 'fade-in');
+                    
+                    // 예약 화면도 확실히 숨김
+                    reservationSection.classList.add('hidden');
+                    reservationSection.classList.remove('fade-in', 'fade-out');
                     
                     mainImage.classList.remove('hidden');
                     mainImage.classList.add('fade-in');
@@ -894,6 +938,14 @@
 
         // 초기화
         updateHeaderButtons();
+
+        // 페이지 로드 시 스크롤을 맨 위로
+        window.addEventListener('load', function() {
+            window.scrollTo(0, 0);
+        });
+
+        // 페이지 진입 시에도 스크롤 맨 위로
+        window.scrollTo(0, 0);
     </script>
 </body>
 </html>
