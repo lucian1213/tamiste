@@ -202,6 +202,13 @@
         }
 
         /* 달력 */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -422,6 +429,7 @@
                 font-size: 1.5em;
             }
 
+            .calendar-grid,
             .calendar {
                 gap: 5px;
             }
@@ -482,6 +490,7 @@
                 font-size: 0.9em;
             }
 
+            .calendar-grid,
             .calendar {
                 gap: 4px;
             }
@@ -558,7 +567,7 @@
                 </div>
 
                 <!-- 달력 -->
-                <div class="calendar">
+                <div class="calendar-grid">
                     <div class="weekday">일</div>
                     <div class="weekday">월</div>
                     <div class="weekday">화</div>
@@ -566,8 +575,8 @@
                     <div class="weekday">목</div>
                     <div class="weekday">금</div>
                     <div class="weekday">토</div>
-                    <div id="calendarDays"></div>
                 </div>
+                <div class="calendar" id="calendarDays"></div>
 
                 <!-- 선택된 날짜 정보 -->
                 <div class="selected-info" id="selectedInfo" style="display: none;">
@@ -575,10 +584,10 @@
                     
                     <!-- 시간 선택 -->
                     <div class="time-slots">
-                        <div class="time-slot" onclick="selectTime('10:00')">10:00</div>
-                        <div class="time-slot" onclick="selectTime('13:00')">13:00</div>
-                        <div class="time-slot" onclick="selectTime('16:00')">16:00</div>
-                        <div class="time-slot" onclick="selectTime('19:00')">19:00</div>
+                        <div class="time-slot" onclick="selectTime('10:00', this)">10:00</div>
+                        <div class="time-slot" onclick="selectTime('13:00', this)">13:00</div>
+                        <div class="time-slot" onclick="selectTime('16:00', this)">16:00</div>
+                        <div class="time-slot" onclick="selectTime('19:00', this)">19:00</div>
                     </div>
 
                     <!-- 예약자 정보 -->
@@ -748,7 +757,9 @@
                 const dayEl = document.createElement('div');
                 dayEl.className = 'day';
                 dayEl.textContent = date;
-                dayEl.onclick = () => selectDate(date);
+                dayEl.onclick = function() {
+                    selectDate(date, this);
+                };
                 
                 // 오늘 이전 날짜는 비활성화
                 const today = new Date();
@@ -780,14 +791,14 @@
         }
 
         // 날짜 선택
-        function selectDate(date) {
+        function selectDate(date, element) {
             // 이전 선택 해제
             document.querySelectorAll('.day').forEach(day => {
                 day.classList.remove('selected');
             });
             
             // 새로운 선택
-            event.target.classList.add('selected');
+            element.classList.add('selected');
             
             const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', 
                               '7월', '8월', '9월', '10월', '11월', '12월'];
@@ -804,14 +815,14 @@
         }
 
         // 시간 선택
-        function selectTime(time) {
+        function selectTime(time, element) {
             // 이전 선택 해제
             document.querySelectorAll('.time-slot').forEach(slot => {
                 slot.classList.remove('selected');
             });
             
             // 새로운 선택
-            event.target.classList.add('selected');
+            element.classList.add('selected');
             selectedTimeStr = time;
             
             // 예약 폼 표시
