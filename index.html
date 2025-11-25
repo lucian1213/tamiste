@@ -615,8 +615,12 @@
     <script>
         let isStoryView = false;
         let isReservationView = false;
-        let currentYear = 2025;
-        let currentMonth = 0; // 0 = 1월
+        
+        // 현재 날짜로 초기화
+        const today = new Date();
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth(); // 현재 월
+        
         let selectedDateStr = '';
         let selectedTimeStr = '';
 
@@ -762,9 +766,12 @@
                 };
                 
                 // 오늘 이전 날짜는 비활성화
-                const today = new Date();
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
                 const currentDate = new Date(currentYear, currentMonth, date);
-                if (currentDate < today.setHours(0, 0, 0, 0)) {
+                currentDate.setHours(0, 0, 0, 0);
+                
+                if (currentDate < todayDate) {
                     dayEl.classList.add('disabled');
                 }
                 
@@ -792,6 +799,11 @@
 
         // 날짜 선택
         function selectDate(date, element) {
+            // disabled 날짜는 선택 불가
+            if (element.classList.contains('disabled')) {
+                return;
+            }
+            
             // 이전 선택 해제
             document.querySelectorAll('.day').forEach(day => {
                 day.classList.remove('selected');
