@@ -429,14 +429,112 @@
             transition: all 0.3s ease;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background: #000000;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .submit-btn:active {
+        .submit-btn:active:not(:disabled) {
             transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* 개인정보 동의 */
+        .privacy-agreement {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            position: relative;
+            padding-left: 35px;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #ffffff;
+            border: 2px solid #cccccc;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            border-color: #333333;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #333333;
+            border-color: #333333;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .agreement-text {
+            font-size: 0.95em;
+            color: #333333;
+            line-height: 1.5;
+        }
+
+        .privacy-link {
+            color: #0066cc;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .privacy-link:hover {
+            color: #004499;
+        }
+
+        .privacy-notice {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.85em;
+            color: #666666;
+            line-height: 1.6;
         }
 
         /* 애니메이션 */
@@ -639,6 +737,35 @@
                 padding: 12px;
                 font-size: 1em;
             }
+
+            .privacy-agreement {
+                padding: 15px;
+                margin: 20px 0;
+            }
+
+            .checkbox-container {
+                padding-left: 30px;
+            }
+
+            .checkmark {
+                height: 20px;
+                width: 20px;
+            }
+
+            .checkbox-container .checkmark:after {
+                left: 6px;
+                top: 2px;
+                width: 5px;
+                height: 10px;
+            }
+
+            .agreement-text {
+                font-size: 0.85em;
+            }
+
+            .privacy-notice {
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
@@ -735,11 +862,23 @@
                             <label>연락처</label>
                             <input type="tel" id="phoneInput" placeholder="010-0000-0000">
                         </div>
-                        <div class="form-group">
-                            <label>인원</label>
-                            <input type="number" id="peopleInput" value="6" min="1" max="6">
+                        
+                        <!-- 개인정보 동의 -->
+                        <div class="privacy-agreement">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="privacyCheck" onchange="toggleSubmitButton()">
+                                <span class="checkmark"></span>
+                                <span class="agreement-text">
+                                    개인정보 수집 및 이용에 동의합니다. 
+                                    <a href="#" onclick="showPrivacyPolicy(event)" class="privacy-link">(자세히 보기)</a>
+                                </span>
+                            </label>
+                            <div class="privacy-notice">
+                                수집항목: 이름, 연락처 | 이용목적: 예약 확인 및 안내 | 보유기간: 게임 종료 후 1개월
+                            </div>
                         </div>
-                        <button class="submit-btn" onclick="submitReservation()">예약 완료</button>
+                        
+                        <button class="submit-btn" id="submitBtn" onclick="submitReservation()" disabled>예약 완료</button>
                     </div>
                 </div>
             </div>
@@ -1067,14 +1206,37 @@
             }, 100);
         }
 
+        // 예약 완료 버튼 토글
+        function toggleSubmitButton() {
+            const checkbox = document.getElementById('privacyCheck');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (checkbox.checked) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // 개인정보 처리방침 보기
+        function showPrivacyPolicy(event) {
+            event.preventDefault();
+            alert('개인정보 처리방침\n\n1. 수집하는 개인정보 항목\n   - 이름, 연락처\n\n2. 개인정보의 수집 및 이용목적\n   - 예약 확인 및 관리\n   - 게임 진행 안내\n   - 예약 변경 및 취소 처리\n\n3. 개인정보의 보유 및 이용기간\n   - 게임 종료 후 1개월\n   - 관련 법령에 의한 보존 필요 시 해당 기간\n\n4. 동의를 거부할 권리 및 동의 거부에 따른 불이익\n   - 개인정보 수집에 동의하지 않을 수 있으나,\n   - 동의하지 않을 경우 예약 서비스 이용이 제한됩니다.');
+        }
+
         // 예약 완료
         function submitReservation() {
             const name = document.getElementById('nameInput').value;
             const phone = document.getElementById('phoneInput').value;
-            const people = document.getElementById('peopleInput').value;
+            const privacyCheck = document.getElementById('privacyCheck').checked;
             
             if (!name || !phone) {
                 alert('이름과 연락처를 입력해주세요.');
+                return;
+            }
+            
+            if (!privacyCheck) {
+                alert('개인정보 수집 및 이용에 동의해주세요.');
                 return;
             }
             
@@ -1083,12 +1245,13 @@
                 return;
             }
             
-            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${phone}\n인원: ${people}명`);
+            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${phone}\n인원: 6명`);
             
             // 폼 초기화
             document.getElementById('nameInput').value = '';
             document.getElementById('phoneInput').value = '';
-            document.getElementById('peopleInput').value = '6';
+            document.getElementById('privacyCheck').checked = false;
+            toggleSubmitButton();
             
             // 메인 화면으로 돌아가기
             toggleContent();
