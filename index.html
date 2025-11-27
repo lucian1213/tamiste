@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>타미스테 - MYSTERY GAMES</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
         // 스크롤 복원 비활성화 (가장 먼저 실행)
         if ('scrollRestoration' in history) {
@@ -990,6 +993,19 @@
     </footer>
 
     <script>
+        // Firebase 초기화
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEwIv6IFu0_Tg4OaYiUK5GWwpHqia6tlE",
+            authDomain: "reservation-mind.firebaseapp.com",
+            projectId: "reservation-mind",
+            storageBucket: "reservation-mind.firebasestorage.app",
+            messagingSenderId: "137392518118",
+            appId: "1:137392518118:web:a33e8eaf4399b46e2b9c27"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         let isStoryView = false;
         let isReservationView = false;
         
@@ -999,12 +1015,129 @@
         
         let selectedDateStr = '';
         let selectedTimeStr = '';
+        let selectedDateKey = '';
 
-        // 예약 가능한 날짜와 시간
-        const availableSlots = {
-            '2025-12-6': ['13:00', '18:00'],
-            '2025-12-13': ['13:00', '18:00']
-        };
+        // Firebase에서 오픈된 슬롯 저장
+        let availableSlots = {};
+
+        // 이미 예약된 슬롯 저장
+        let bookedSlots = {};
+
+        // 차단된 슬롯 저장 (사용 안함 - 오픈 방식으로 변경)
+        let blockedSlots = {};
+
+        // Firebase에서 예약 데이터 실시간 로드
+        function loadReservations() {
+            db.collection('tamiste_reservations')
+                .where('status', '==', 'confirmed')
+                .onSnapshot((snapshot) => {
+                    bookedSlots = {};
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const dateKey = data.dateKey;
+                        const time = data.time;
+                        
+                        if (!bookedSlots[dateKey]) {
+                            bookedSlots[dateKey] = [];
+                        }
+                        bookedSlots[dateKey].push(time);
+                    });
+                    
+                    // 현재 선택된 날짜가 있으면 시간 슬롯 다시 렌더링
+                    if (selectedDateKey && document.getElementById('selectedInfo').style.display !== 'none') {
+                        updateTimeSlots(selectedDateKey);
+                    }
+                    
+                    // 달력도 업데이트
+                    renderCalendar();
+                }, (error) => {
+                    console.error("예약 데이터 로드 오류:", error);
+                });
+        }
+
+        // Firebase에서 오픈된 슬롯 실시간 로드
+        function loadAvailableSlots() {
+            db.collection('tamiste_available_slots')
+                .onSnapshot((snapshot) => {
+                    availableSlots = {};
+                    const now = new Date();
+                    
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const dateKey = data.dateKey;
+                        const time = data.time;
+                        
+                        // openAt이 설정되어 있으면, 해당 시간이 지났는지 체크
+                        if (data.openAt) {
+                            const openAtDate = data.openAt.toDate ? data.openAt.toDate() : new Date(data.openAt);
+                            if (now < openAtDate) {
+                                return; // 아직 오픈 시간 전 - 무시
+                            }
+                        }
+                        
+                        if (!availableSlots[dateKey]) {
+                            availableSlots[dateKey] = [];
+                        }
+                        availableSlots[dateKey].push(time);
+                    });
+                    
+                    // 현재 선택된 날짜가 있으면 시간 슬롯 다시 렌더링
+                    if (selectedDateKey && document.getElementById('selectedInfo').style.display !== 'none') {
+                        updateTimeSlots(selectedDateKey);
+                    }
+                    
+                    // 달력도 업데이트
+                    renderCalendar();
+                }, (error) => {
+                    console.error("오픈 슬롯 로드 오류:", error);
+                });
+        }
+
+        // 시간 슬롯 업데이트
+        function updateTimeSlots(dateKey) {
+            const availableTimes = availableSlots[dateKey] || [];
+            const bookedTimes = bookedSlots[dateKey] || [];
+            
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            timeSlotsContainer.innerHTML = '';
+            
+            if (availableTimes.length === 0) {
+                const noticeDiv = document.createElement('div');
+                noticeDiv.className = 'time-notice';
+                noticeDiv.innerHTML = '⚠️ 이 날짜에는 예약 가능한 시간이 없습니다.';
+                timeSlotsContainer.appendChild(noticeDiv);
+                return;
+            }
+            
+            let hasAvailableTime = false;
+            
+            availableTimes.forEach(time => {
+                const timeSlot = document.createElement('div');
+                const isBooked = bookedTimes.includes(time);
+                
+                if (isBooked) {
+                    timeSlot.className = 'time-slot disabled';
+                    timeSlot.textContent = time + ' (예약완료)';
+                    timeSlot.title = '이미 예약된 시간입니다';
+                } else {
+                    timeSlot.className = 'time-slot';
+                    timeSlot.textContent = time;
+                    timeSlot.onclick = function() {
+                        selectTime(time, this);
+                    };
+                    hasAvailableTime = true;
+                }
+                
+                timeSlotsContainer.appendChild(timeSlot);
+            });
+            
+            if (!hasAvailableTime) {
+                const noticeDiv = document.createElement('div');
+                noticeDiv.className = 'time-notice';
+                noticeDiv.innerHTML = '⚠️ 이 날짜의 모든 시간이 예약되었습니다.';
+                timeSlotsContainer.appendChild(noticeDiv);
+            }
+        }
 
         // 헤더 버튼 업데이트
         function updateHeaderButtons() {
@@ -1245,35 +1378,17 @@
                               '7월', '8월', '9월', '10월', '11월', '12월'];
             
             selectedDateStr = `${currentYear}년 ${monthNames[currentMonth]} ${date}일`;
+            selectedDateKey = `${currentYear}-${currentMonth + 1}-${date}`;
+            
             document.getElementById('selectedDate').textContent = selectedDateStr;
             document.getElementById('selectedInfo').style.display = 'block';
             
-            // 해당 날짜의 시간 슬롯 표시 (모두 비활성화)
-            const dateKey = `${currentYear}-${currentMonth + 1}-${date}`;
-            const availableTimes = availableSlots[dateKey] || [];
-            
-            const timeSlotsContainer = document.getElementById('timeSlots');
-            timeSlotsContainer.innerHTML = '';
-            
-            // 시간 슬롯 표시 (현재는 모두 비활성화)
-            const allTimes = ['13:00', '18:00'];
-            allTimes.forEach(time => {
-                const timeSlot = document.createElement('div');
-                timeSlot.className = 'time-slot disabled';
-                timeSlot.textContent = time;
-                timeSlot.title = '현재 예약이 마감되었습니다';
-                
-                timeSlotsContainer.appendChild(timeSlot);
-            });
-            
-            // 비활성화 안내 메시지 추가
-            const noticeDiv = document.createElement('div');
-            noticeDiv.className = 'time-notice';
-            noticeDiv.innerHTML = '⚠️ 추후 예약 오픈 시 활성화됩니다.';
-            timeSlotsContainer.appendChild(noticeDiv);
+            // 시간 슬롯 업데이트 (Firebase 데이터 반영)
+            updateTimeSlots(selectedDateKey);
             
             // 예약 폼 숨기기
             document.getElementById('reservationForm').style.display = 'none';
+            selectedTimeStr = '';
             
             // 시간 선택 영역으로 부드럽게 스크롤
             setTimeout(() => {
@@ -1343,7 +1458,7 @@
         }
 
         // 예약 완료
-        function submitReservation() {
+        async function submitReservation() {
             const name = document.getElementById('nameInput').value.trim();
             const phone = document.getElementById('phoneInput').value.trim();
             const privacyCheck = document.getElementById('privacyCheck').checked;
@@ -1372,20 +1487,100 @@
                 alert('날짜와 시간을 선택해주세요.');
                 return;
             }
-            
-            // 전화번호 포맷팅 (표시용)
-            const formattedPhone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-            
-            alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${formattedPhone}\n인원: 6명`);
-            
-            // 폼 초기화
-            document.getElementById('nameInput').value = '';
-            document.getElementById('phoneInput').value = '';
-            document.getElementById('privacyCheck').checked = false;
-            checkFormCompletion();
-            
-            // 메인 화면으로 돌아가기
-            toggleContent();
+
+            // 버튼 비활성화 (중복 클릭 방지)
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '예약 처리 중...';
+
+            try {
+                // 오픈된 슬롯인지 체크
+                const availableCheck = await db.collection('tamiste_available_slots')
+                    .where('dateKey', '==', selectedDateKey)
+                    .where('time', '==', selectedTimeStr)
+                    .get();
+
+                if (availableCheck.empty) {
+                    alert('죄송합니다. 해당 시간은 예약이 불가능합니다.\n다른 시간을 선택해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '예약 완료';
+                    updateTimeSlots(selectedDateKey);
+                    return;
+                }
+
+                // openAt 체크 (아직 오픈 시간 전인지)
+                const now = new Date();
+                let isAvailable = false;
+                
+                availableCheck.forEach(doc => {
+                    const data = doc.data();
+                    if (data.openAt) {
+                        const openAtDate = data.openAt.toDate ? data.openAt.toDate() : new Date(data.openAt);
+                        if (now >= openAtDate) {
+                            isAvailable = true;
+                        }
+                    } else {
+                        isAvailable = true; // openAt이 없으면 바로 오픈
+                    }
+                });
+
+                if (!isAvailable) {
+                    alert('죄송합니다. 해당 시간은 아직 예약이 열리지 않았습니다.\n잠시 후 다시 시도해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '예약 완료';
+                    updateTimeSlots(selectedDateKey);
+                    return;
+                }
+
+                // 중복 예약 체크
+                const existingReservation = await db.collection('tamiste_reservations')
+                    .where('dateKey', '==', selectedDateKey)
+                    .where('time', '==', selectedTimeStr)
+                    .where('status', '==', 'confirmed')
+                    .get();
+
+                if (!existingReservation.empty) {
+                    alert('죄송합니다. 해당 시간은 이미 예약되었습니다.\n다른 시간을 선택해주세요.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '예약 완료';
+                    updateTimeSlots(selectedDateKey);
+                    return;
+                }
+
+                // 전화번호 포맷팅 (표시용)
+                const formattedPhone = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+
+                // Firebase에 예약 저장
+                await db.collection('tamiste_reservations').add({
+                    name: name,
+                    phone: phone,
+                    formattedPhone: formattedPhone,
+                    dateKey: selectedDateKey,
+                    dateStr: selectedDateStr,
+                    time: selectedTimeStr,
+                    people: 6,
+                    status: 'confirmed',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${formattedPhone}\n인원: 6명\n\n예약 확정 후 안내 문자가 발송됩니다.`);
+                
+                // 폼 초기화
+                document.getElementById('nameInput').value = '';
+                document.getElementById('phoneInput').value = '';
+                document.getElementById('privacyCheck').checked = false;
+                submitBtn.textContent = '예약 완료';
+                checkFormCompletion();
+                
+                // 메인 화면으로 돌아가기
+                toggleContent();
+
+            } catch (error) {
+                console.error('예약 오류:', error);
+                alert('예약 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '예약 완료';
+            }
         }
 
         // 스크롤 시 헤더 그림자 효과
@@ -1400,6 +1595,8 @@
 
         // 초기화
         updateHeaderButtons();
+        loadReservations(); // Firebase 예약 데이터 로드
+        loadAvailableSlots(); // Firebase 오픈 슬롯 로드
 
         // 페이지 로드 시 스크롤을 맨 위로 (여러 단계에서 실행)
         window.scrollTo(0, 0);
