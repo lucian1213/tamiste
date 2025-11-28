@@ -1997,7 +1997,6 @@
                 const snapshot = await db.collection('tamiste_reservations')
                     .where('name', '==', name)
                     .where('phone', '==', phone)
-                    .orderBy('createdAt', 'desc')
                     .get();
 
                 const resultDiv = document.getElementById('checkResult');
@@ -2014,9 +2013,23 @@
                         </div>
                     `;
                 } else {
-                    let html = '';
+                    // 결과를 배열로 변환 후 정렬
+                    let reservations = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
+                        data.id = doc.id;
+                        reservations.push(data);
+                    });
+                    
+                    // createdAt 기준 내림차순 정렬
+                    reservations.sort((a, b) => {
+                        const timeA = a.createdAt ? a.createdAt.toMillis() : 0;
+                        const timeB = b.createdAt ? b.createdAt.toMillis() : 0;
+                        return timeB - timeA;
+                    });
+
+                    let html = '';
+                    reservations.forEach(data => {
                         const statusText = data.status === 'confirmed' ? '예약 완료' : '취소됨';
                         const statusClass = data.status === 'confirmed' ? 'color: #28a745;' : 'color: #dc3545;';
                         
