@@ -118,25 +118,6 @@
             transform: translateY(0);
         }
 
-        .check-btn {
-            padding: 12px 35px;
-            background: #ffffff;
-            color: #666666;
-            border: 2px solid #666666;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .check-btn:hover {
-            background: #666666;
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
         /* 모달 스타일 */
         .modal-overlay {
             display: none;
@@ -277,6 +258,36 @@
             font-size: 1.1em;
         }
 
+        .payment-amount {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 12px;
+            border: 2px solid #ffc107;
+        }
+
+        .payment-amount .amount-label {
+            display: block;
+            font-size: 0.85em;
+            color: #666666;
+            margin-bottom: 5px;
+        }
+
+        .payment-amount .amount-value {
+            display: block;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #d63384;
+        }
+
+        .payment-amount .amount-detail {
+            display: block;
+            font-size: 0.85em;
+            color: #666666;
+            margin-top: 3px;
+        }
+
         .payment-account {
             background: #ffffff;
             border-radius: 8px;
@@ -321,6 +332,42 @@
 
         .no-reservation p {
             margin-bottom: 10px;
+        }
+
+        /* 예약 확인 버튼 바 */
+        .check-reservation-bar {
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .check-reservation-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #ffffff;
+            color: #333333;
+            border: 2px solid #333333;
+            border-radius: 30px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .check-reservation-btn:hover {
+            background: #333333;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .check-reservation-btn .check-icon {
+            font-size: 1.1em;
         }
 
         /* 메인 컨테이너 */
@@ -846,14 +893,22 @@
             }
 
             .header-buttons {
-                gap: 8px;
+                gap: 10px;
             }
 
             .toggle-btn,
-            .reserve-btn,
-            .check-btn {
-                padding: 8px 15px;
-                font-size: 0.85em;
+            .reserve-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .check-reservation-bar {
+                margin-bottom: 15px;
+            }
+
+            .check-reservation-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
             }
 
             .main-container {
@@ -914,10 +969,18 @@
             }
 
             .toggle-btn,
-            .reserve-btn,
-            .check-btn {
-                padding: 6px 10px;
-                font-size: 0.75em;
+            .reserve-btn {
+                padding: 8px 18px;
+                font-size: 0.85em;
+            }
+
+            .check-reservation-bar {
+                margin-bottom: 12px;
+            }
+
+            .check-reservation-btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
             }
 
             .main-container {
@@ -1094,7 +1157,6 @@
         <div class="header-buttons">
             <button class="toggle-btn" id="toggleBtn" onclick="toggleContent()">줄거리 보기</button>
             <button class="reserve-btn" onclick="showReservation()">예약하기</button>
-            <button class="check-btn" onclick="openCheckModal()">예약 확인</button>
         </div>
     </header>
 
@@ -1113,6 +1175,14 @@
 
         <!-- 예약 페이지 (초기에는 숨김) -->
         <div class="reservation-container hidden" id="reservationSection">
+            <!-- 예약 확인 버튼 -->
+            <div class="check-reservation-bar">
+                <button class="check-reservation-btn" onclick="openCheckModal()">
+                    <span class="check-icon">🔍</span>
+                    <span>예약 확인</span>
+                </button>
+            </div>
+            
             <div class="reservation-box">
                 <h2>타미스테 예약</h2>
                 
@@ -1257,6 +1327,11 @@
             </div>
             <div class="payment-info">
                 <h4>💳 입금 안내</h4>
+                <div class="payment-amount">
+                    <span class="amount-label">입금 금액</span>
+                    <span class="amount-value">240,000원</span>
+                    <span class="amount-detail">(1인 40,000원 × 6인)</span>
+                </div>
                 <div class="payment-account">
                     <div class="bank">우리은행</div>
                     <div class="account-number">1002533722161</div>
@@ -1979,6 +2054,11 @@
                             html += `
                                 <div class="payment-info">
                                     <h4>💳 입금 안내</h4>
+                                    <div class="payment-amount">
+                                        <span class="amount-label">입금 금액</span>
+                                        <span class="amount-value">240,000원</span>
+                                        <span class="amount-detail">(1인 40,000원 × 6인)</span>
+                                    </div>
                                     <div class="payment-account">
                                         <div class="bank">우리은행</div>
                                         <div class="account-number">1002533722161</div>
