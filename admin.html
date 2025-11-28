@@ -948,6 +948,15 @@
                         data.id = doc.id;
                         availableSlots.push(data);
                     });
+                    
+                    // 날짜 내에서 시간순 정렬 (13:00 → 18:00)
+                    availableSlots.sort((a, b) => {
+                        if (a.dateKey !== b.dateKey) {
+                            return a.dateKey.localeCompare(b.dateKey);
+                        }
+                        return a.time.localeCompare(b.time);
+                    });
+                    
                     renderAvailableSlots();
                 }, (error) => {
                     console.error("오픈 목록 로드 오류:", error);
@@ -972,9 +981,19 @@
                 let isBooked = false;
                 
                 if (slot.openAt) {
-                    const openAtDate = slot.openAt.toDate ? slot.openAt.toDate() : new Date(slot.openAt);
-                    isPending = now < openAtDate;
-                    openAtStr = openAtDate.toLocaleString('ko-KR');
+                    let openAtDate;
+                    if (slot.openAt.toDate) {
+                        openAtDate = slot.openAt.toDate();
+                    } else if (slot.openAt.seconds) {
+                        openAtDate = new Date(slot.openAt.seconds * 1000);
+                    } else {
+                        openAtDate = new Date(slot.openAt);
+                    }
+                    
+                    if (!isNaN(openAtDate.getTime())) {
+                        isPending = now.getTime() < openAtDate.getTime();
+                        openAtStr = openAtDate.toLocaleString('ko-KR');
+                    }
                 }
 
                 // 예약 여부 체크
