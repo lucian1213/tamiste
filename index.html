@@ -1438,9 +1438,23 @@
                         
                         // openAt이 설정되어 있으면, 해당 시간이 지났는지 체크
                         if (data.openAt) {
-                            const openAtDate = data.openAt.toDate ? data.openAt.toDate() : new Date(data.openAt);
-                            if (now < openAtDate) {
-                                return; // 아직 오픈 시간 전 - 무시
+                            let openAtDate;
+                            if (data.openAt.toDate) {
+                                // Firestore Timestamp
+                                openAtDate = data.openAt.toDate();
+                            } else if (data.openAt.seconds) {
+                                // Timestamp 객체 (seconds, nanoseconds)
+                                openAtDate = new Date(data.openAt.seconds * 1000);
+                            } else {
+                                // 문자열 또는 Date
+                                openAtDate = new Date(data.openAt);
+                            }
+                            
+                            // 유효한 날짜인지 확인
+                            if (!isNaN(openAtDate.getTime())) {
+                                if (now.getTime() < openAtDate.getTime()) {
+                                    return; // 아직 오픈 시간 전 - 무시
+                                }
                             }
                         }
                         
@@ -1449,6 +1463,11 @@
                         }
                         availableSlots[dateKey].push(time);
                     });
+                    
+                    // 각 날짜의 시간을 정렬 (13:00, 18:00 순서로)
+                    for (const dateKey in availableSlots) {
+                        availableSlots[dateKey].sort();
+                    }
                     
                     // 현재 선택된 날짜가 있으면 시간 슬롯 다시 렌더링
                     if (selectedDateKey && document.getElementById('selectedInfo').style.display !== 'none') {
@@ -1884,8 +1903,16 @@
                 availableCheck.forEach(doc => {
                     const data = doc.data();
                     if (data.openAt) {
-                        const openAtDate = data.openAt.toDate ? data.openAt.toDate() : new Date(data.openAt);
-                        if (now >= openAtDate) {
+                        let openAtDate;
+                        if (data.openAt.toDate) {
+                            openAtDate = data.openAt.toDate();
+                        } else if (data.openAt.seconds) {
+                            openAtDate = new Date(data.openAt.seconds * 1000);
+                        } else {
+                            openAtDate = new Date(data.openAt);
+                        }
+                        
+                        if (!isNaN(openAtDate.getTime()) && now.getTime() >= openAtDate.getTime()) {
                             isAvailable = true;
                         }
                     } else {
