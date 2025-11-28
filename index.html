@@ -118,6 +118,211 @@
             transform: translateY(0);
         }
 
+        .check-btn {
+            padding: 12px 35px;
+            background: #ffffff;
+            color: #666666;
+            border: 2px solid #666666;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .check-btn:hover {
+            background: #666666;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 모달 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-box h3 {
+            margin-bottom: 25px;
+            font-size: 1.4em;
+            color: #333333;
+            text-align: center;
+        }
+
+        .modal-form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .modal-form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .modal-form-group input:focus {
+            outline: none;
+            border-color: #333333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: #333333;
+            color: #ffffff;
+        }
+
+        .modal-btn.primary:hover {
+            background: #000000;
+        }
+
+        .modal-btn.secondary {
+            background: #e0e0e0;
+            color: #333333;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #cccccc;
+        }
+
+        /* 예약 확인 결과 */
+        .reservation-result {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666666;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #333333;
+            font-weight: 600;
+        }
+
+        /* 입금 안내 박스 */
+        .payment-info {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .payment-info h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .payment-account {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .payment-account .bank {
+            color: #666666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .payment-account .account-number {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333333;
+            letter-spacing: 1px;
+        }
+
+        .payment-account .account-holder {
+            color: #666666;
+            margin-top: 5px;
+        }
+
+        .payment-notice {
+            font-size: 0.9em;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .payment-notice strong {
+            color: #d63384;
+        }
+
+        .no-reservation {
+            text-align: center;
+            padding: 30px;
+            color: #666666;
+        }
+
+        .no-reservation p {
+            margin-bottom: 10px;
+        }
+
         /* 메인 컨테이너 */
         .main-container {
             margin-top: 80px;
@@ -641,13 +846,14 @@
             }
 
             .header-buttons {
-                gap: 10px;
+                gap: 8px;
             }
 
             .toggle-btn,
-            .reserve-btn {
-                padding: 10px 20px;
-                font-size: 0.9em;
+            .reserve-btn,
+            .check-btn {
+                padding: 8px 15px;
+                font-size: 0.85em;
             }
 
             .main-container {
@@ -687,6 +893,10 @@
             .time-slots {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .modal-box {
+                padding: 25px;
+            }
         }
 
         /* 반응형 디자인 - 모바일 */
@@ -700,13 +910,14 @@
             }
 
             .header-buttons {
-                gap: 8px;
+                gap: 5px;
             }
 
             .toggle-btn,
-            .reserve-btn {
-                padding: 8px 15px;
-                font-size: 0.85em;
+            .reserve-btn,
+            .check-btn {
+                padding: 6px 10px;
+                font-size: 0.75em;
             }
 
             .main-container {
@@ -755,6 +966,19 @@
             }
 
             .calendar-header h3 {
+                font-size: 1.1em;
+            }
+
+            .modal-box {
+                padding: 20px;
+                margin: 15px;
+            }
+
+            .modal-box h3 {
+                font-size: 1.2em;
+            }
+
+            .payment-account .account-number {
                 font-size: 1.1em;
             }
 
@@ -870,6 +1094,7 @@
         <div class="header-buttons">
             <button class="toggle-btn" id="toggleBtn" onclick="toggleContent()">줄거리 보기</button>
             <button class="reserve-btn" onclick="showReservation()">예약하기</button>
+            <button class="check-btn" onclick="openCheckModal()">예약 확인</button>
         </div>
     </header>
 
@@ -979,6 +1204,75 @@
             </div>
         </div>
     </main>
+
+    <!-- 예약 확인 모달 -->
+    <div class="modal-overlay" id="checkModal">
+        <div class="modal-box">
+            <h3>📋 예약 확인</h3>
+            <div id="checkForm">
+                <div class="modal-form-group">
+                    <label>예약자 이름</label>
+                    <input type="text" id="checkName" placeholder="예약 시 입력한 이름">
+                </div>
+                <div class="modal-form-group">
+                    <label>연락처</label>
+                    <input type="tel" id="checkPhone" placeholder="'-' 없이 숫자만 입력" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn secondary" onclick="closeCheckModal()">닫기</button>
+                    <button class="modal-btn primary" onclick="searchReservation()">조회하기</button>
+                </div>
+            </div>
+            <div id="checkResult" style="display: none;">
+                <!-- 결과가 여기에 표시됨 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 예약 완료 모달 -->
+    <div class="modal-overlay" id="completeModal">
+        <div class="modal-box">
+            <h3>✅ 예약이 완료되었습니다!</h3>
+            <div class="reservation-result">
+                <div class="result-item">
+                    <span class="result-label">날짜</span>
+                    <span class="result-value" id="completeDate"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">시간</span>
+                    <span class="result-value" id="completeTime"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">이름</span>
+                    <span class="result-value" id="completeName"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">연락처</span>
+                    <span class="result-value" id="completePhone"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">인원</span>
+                    <span class="result-value">6명</span>
+                </div>
+            </div>
+            <div class="payment-info">
+                <h4>💳 입금 안내</h4>
+                <div class="payment-account">
+                    <div class="bank">우리은행</div>
+                    <div class="account-number">1002533722161</div>
+                    <div class="account-holder">이기민</div>
+                </div>
+                <div class="payment-notice">
+                    <strong>⏰ 12시간 이내</strong>에 입금해 주세요.<br>
+                    입금 확인 후 <strong>예약 확정 문자</strong>가 발송됩니다.<br>
+                    미입금 시 예약이 자동 취소됩니다.
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="closeCompleteModal()" style="flex: 1;">확인</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 푸터 -->
     <footer class="footer">
@@ -1563,7 +1857,12 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert(`예약이 완료되었습니다!\n\n날짜: ${selectedDateStr}\n시간: ${selectedTimeStr}\n이름: ${name}\n연락처: ${formattedPhone}\n인원: 6명\n\n예약 확정 후 안내 문자가 발송됩니다.`);
+                // 예약 완료 모달 표시
+                document.getElementById('completeDate').textContent = selectedDateStr;
+                document.getElementById('completeTime').textContent = selectedTimeStr;
+                document.getElementById('completeName').textContent = name;
+                document.getElementById('completePhone').textContent = formattedPhone;
+                document.getElementById('completeModal').classList.add('active');
                 
                 // 폼 초기화
                 document.getElementById('nameInput').value = '';
@@ -1571,9 +1870,6 @@
                 document.getElementById('privacyCheck').checked = false;
                 submitBtn.textContent = '예약 완료';
                 checkFormCompletion();
-                
-                // 메인 화면으로 돌아가기
-                toggleContent();
 
             } catch (error) {
                 console.error('예약 오류:', error);
@@ -1592,6 +1888,143 @@
                 header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
             }
         });
+
+        // 예약 확인 모달 열기
+        function openCheckModal() {
+            document.getElementById('checkModal').classList.add('active');
+            document.getElementById('checkForm').style.display = 'block';
+            document.getElementById('checkResult').style.display = 'none';
+            document.getElementById('checkName').value = '';
+            document.getElementById('checkPhone').value = '';
+        }
+
+        // 예약 확인 모달 닫기
+        function closeCheckModal() {
+            document.getElementById('checkModal').classList.remove('active');
+        }
+
+        // 예약 조회
+        async function searchReservation() {
+            const name = document.getElementById('checkName').value.trim();
+            const phone = document.getElementById('checkPhone').value.trim();
+
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+
+            if (!phone) {
+                alert('연락처를 입력해주세요.');
+                return;
+            }
+
+            try {
+                const snapshot = await db.collection('tamiste_reservations')
+                    .where('name', '==', name)
+                    .where('phone', '==', phone)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                const resultDiv = document.getElementById('checkResult');
+                
+                if (snapshot.empty) {
+                    resultDiv.innerHTML = `
+                        <div class="no-reservation">
+                            <p>😢 예약 내역을 찾을 수 없습니다.</p>
+                            <p>이름과 연락처를 다시 확인해주세요.</p>
+                        </div>
+                        <div class="modal-buttons">
+                            <button class="modal-btn secondary" onclick="backToCheckForm()">다시 조회</button>
+                            <button class="modal-btn primary" onclick="closeCheckModal()">닫기</button>
+                        </div>
+                    `;
+                } else {
+                    let html = '';
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const statusText = data.status === 'confirmed' ? '예약 완료' : '취소됨';
+                        const statusClass = data.status === 'confirmed' ? 'color: #28a745;' : 'color: #dc3545;';
+                        
+                        html += `
+                            <div class="reservation-result">
+                                <div class="result-item">
+                                    <span class="result-label">상태</span>
+                                    <span class="result-value" style="${statusClass}">${statusText}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">날짜</span>
+                                    <span class="result-value">${data.dateStr}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">시간</span>
+                                    <span class="result-value">${data.time}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">이름</span>
+                                    <span class="result-value">${data.name}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">연락처</span>
+                                    <span class="result-value">${data.formattedPhone || data.phone}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">인원</span>
+                                    <span class="result-value">6명</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // 확정된 예약에만 입금 안내 표시
+                        if (data.status === 'confirmed') {
+                            html += `
+                                <div class="payment-info">
+                                    <h4>💳 입금 안내</h4>
+                                    <div class="payment-account">
+                                        <div class="bank">우리은행</div>
+                                        <div class="account-number">1002533722161</div>
+                                        <div class="account-holder">이기민</div>
+                                    </div>
+                                    <div class="payment-notice">
+                                        <strong>⏰ 12시간 이내</strong>에 입금해 주세요.<br>
+                                        입금 확인 후 <strong>예약 확정 문자</strong>가 발송됩니다.<br>
+                                        미입금 시 예약이 자동 취소됩니다.
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    html += `
+                        <div class="modal-buttons">
+                            <button class="modal-btn secondary" onclick="backToCheckForm()">다시 조회</button>
+                            <button class="modal-btn primary" onclick="closeCheckModal()">닫기</button>
+                        </div>
+                    `;
+
+                    resultDiv.innerHTML = html;
+                }
+
+                document.getElementById('checkForm').style.display = 'none';
+                resultDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('예약 조회 오류:', error);
+                alert('예약 조회 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
+            }
+        }
+
+        // 예약 확인 폼으로 돌아가기
+        function backToCheckForm() {
+            document.getElementById('checkForm').style.display = 'block';
+            document.getElementById('checkResult').style.display = 'none';
+        }
+
+        // 예약 완료 모달 닫기
+        function closeCompleteModal() {
+            document.getElementById('completeModal').classList.remove('active');
+            // 메인 화면으로 돌아가기
+            toggleContent();
+        }
 
         // 초기화
         updateHeaderButtons();
