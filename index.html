@@ -1380,8 +1380,9 @@
         let isReservationView = false;
         
         // 2025년 12월로 초기화
-        let currentYear = 2025;
-        let currentMonth = 11; // 12월 (0-based index이므로 11)
+        const today = new Date();
+        let currentYear = today.getFullYear();  // 현재 연도
+        let currentMonth = today.getMonth();     // 현재 월
         
         let selectedDateStr = '';
         let selectedTimeStr = '';
