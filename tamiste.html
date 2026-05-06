@@ -78,8 +78,13 @@
     width: 400px; height: 860px; background: var(--bg-app);
     border: 1px solid var(--border); border-radius: 44px;
     box-shadow: 0 0 0 8px #090506, 0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(196,92,40,0.06), inset 0 0 0 1px rgba(255,255,255,0.025);
-    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    min-height: 0;
   }
+  /* content area must not overflow phone */
+  .phone .content { flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0; }
+  .phone .tab-bar { flex-shrink: 0; }
   .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 130px; height: 26px; background: #090506; border-radius: 0 0 18px 18px; z-index: 50; }
 
   /* ── STATUS BAR ── */
@@ -293,6 +298,10 @@
   @media (max-width: 460px) {
     .phone { width: calc(100vw - 32px); height: calc(100vh - 64px); max-height: 860px; border-radius: 32px; }
   }
+  @media (max-height: 900px) {
+    .phone { height: calc(100vh - 40px); max-height: 860px; }
+    .page { padding: 20px 16px; }
+  }
 </style>
 </head>
 <body>
@@ -303,7 +312,7 @@
   <div class="notch"></div>
 
   <div class="status-bar">
-    <span>??:??</span>
+    <span id="status-time">--:--</span>
     <div class="right">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13h2v8H3zM7 9h2v12H7zM11 5h2v16h-2zM15 9h2v12h-2zM19 13h2v8h-2z"/></svg>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 9c5.5-5 14.5-5 20 0M5 12c4-3.5 10-3.5 14 0M8 15c2.5-2 5.5-2 8 0M12 18l.01.01"/></svg>
@@ -591,6 +600,17 @@
   document.querySelectorAll('[data-back]').forEach(function(el){el.addEventListener('click',function(){var t=el.dataset.back;while(stack.length>1&&stack[stack.length-1]!==t)stack.pop();show(t);});});
   
   show('home');
+
+  // 현재 시각 표시
+  function updateClock(){
+    var now = new Date();
+    var h = now.getHours().toString().padStart(2,'0');
+    var m = now.getMinutes().toString().padStart(2,'0');
+    var el = document.getElementById('status-time');
+    if(el) el.textContent = h + ':' + m;
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
 })();
 </script>
 </body>
