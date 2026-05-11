@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tamiste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=IBM+Plex+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-page:    #0c080a;
+    --bg-app:     #130c0e;
+    --surface:    #1c1214;
+    --surface-2:  #231619;
+    --surface-3:  #2b1c1f;
+    --border:     #3a2428;
+    --border-soft:#271a1c;
+
+    --text:       #ede8df;
+    --text-mute:  #9a8880;
+    --text-faint: #5a4840;
+
+    --sunset:     #c45c28;
+    --sunset-dim: #7a3a1a;
+    --dusk:       #6b3a5a;
+    --ember:      #d49050;
+    --ember-dim:  #7a5528;
+
+    /* 캐릭터 6색 */
+    --c-a: #7a5538;
+    --c-b: #3a5878;
+    --c-c: #3a5438;
+    --c-d: #6a4a6a;
+    --c-e: #8a4a20;
+    --c-f: #7a2020;
+
+    --font-logo:    'Italiana', serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+    --font-kr:      'Noto Sans KR', sans-serif;
+    --font-kr-serif:'Noto Serif KR', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg-page); color: var(--text);
+    font-family: var(--font-kr); font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    height: 100vh; overflow: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(196,92,40,0.12), transparent 45%),
+      radial-gradient(ellipse at 85% 100%, rgba(107,58,90,0.10), transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(212,144,80,0.04), transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.8, 0 0 0 0 0.5, 0 0 0 0 0.3, 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1; opacity: 0.5;
+  }
+
+  /* ── PAGE ── */
+  .page {
+    position: relative; z-index: 2;
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px 16px; flex-direction: column; gap: 12px;
+    overflow: hidden;
+  }
+  .page-meta {
+    text-align: center; color: var(--text-faint);
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  }
+  .page-meta .dot { display: inline-block; width: 4px; height: 4px; background: var(--sunset-dim); border-radius: 50%; margin: 0 10px; vertical-align: middle; }
+
+  /* ── PHONE ── */
+  .phone {
+    width: 400px;
+    height: 860px;
+    max-height: calc(100vh - 100px);
+    background: var(--bg-app);
+    border: 1px solid var(--border); border-radius: 44px;
+    box-shadow: 0 0 0 8px #090506, 0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(196,92,40,0.06), inset 0 0 0 1px rgba(255,255,255,0.025);
+    position: relative; overflow: hidden;
+  }
+  .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 130px; height: 26px; background: #090506; border-radius: 0 0 18px 18px; z-index: 50; }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 44px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 11px; color: var(--text); z-index: 10;
+  }
+  .status-bar .right { display: flex; gap: 6px; align-items: center; }
+  .status-bar svg { width: 14px; height: 14px; opacity: 0.8; }
+
+  /* ── APP HEADER ── */
+  .app-header {
+    position: absolute; top: 44px; left: 0; right: 0;
+    height: 52px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-soft); background: var(--bg-app); z-index: 10;
+  }
+  .app-header::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(196,92,40,0.3) 40%, rgba(212,144,80,0.3) 60%, transparent); }
+  .logo { font-family: var(--font-logo); font-size: 27px; letter-spacing: 0.05em; color: var(--text); line-height: 1; position: relative; }
+  .logo::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, var(--sunset-dim), var(--dusk) 60%, transparent); }
+  .header-actions { display: flex; gap: 18px; align-items: center; }
+  .header-actions svg { width: 22px; height: 22px; color: var(--text); cursor: pointer; transition: color 0.2s; }
+  .header-actions svg:hover { color: var(--sunset); }
+  .back-btn { background: none; border: none; color: var(--text); cursor: pointer; padding: 4px 6px; display: flex; align-items: center; font-family: var(--font-kr); font-size: 13px; }
+  .back-btn svg { width: 18px; height: 18px; margin-right: 2px; }
+
+  /* ── CONTENT ── */
+  .content {
+    position: absolute;
+    top: 96px;   /* status-bar(44) + app-header(52) */
+    bottom: 64px; /* tab-bar height */
+    left: 0; right: 0;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .content::-webkit-scrollbar { width: 0; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── STORY RAIL ── */
+  .story-rail { display: flex; gap: 14px; padding: 14px 16px; overflow-x: auto; border-bottom: 1px solid var(--border-soft); }
+  .story-rail::-webkit-scrollbar { height: 0; }
+  .story { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .story-ring { width: 60px; height: 60px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, var(--sunset), var(--dusk) 60%, var(--ember)); }
+  .story-ring.viewed { background: var(--border); }
+  .story-avatar { width: 100%; height: 100%; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--bg-app); overflow: hidden; }
+  .story span { font-size: 10px; color: var(--text-mute); font-family: var(--font-mono); letter-spacing: 0.02em; max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ── POST ── */
+  .post { border-bottom: 1px solid var(--border-soft); }
+  .post-head { display: flex; align-items: center; padding: 12px 14px; gap: 10px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; overflow: hidden; background: var(--surface-2); }
+  .avatar.lg { width: 80px; height: 80px; }
+  .avatar.md { width: 44px; height: 44px; }
+  .avatar.sm { width: 28px; height: 28px; }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-meta .handle { font-family: var(--font-mono); font-size: 12px; color: var(--text); letter-spacing: 0.02em; }
+  .post-meta .sub { font-size: 10px; color: var(--text-faint); margin-top: 2px; letter-spacing: 0.05em; }
+  .post-more { color: var(--text-mute); font-size: 18px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+  .post-body { cursor: pointer; }
+
+  .post-text-only {
+    padding: 48px 32px; text-align: center;
+    background: linear-gradient(180deg, #1a1010 0%, #100a0c 100%);
+    border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); position: relative;
+  }
+  .post-text-only::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(196,92,40,0.4) 50%, transparent); }
+  .post-text-only::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(107,58,90,0.3) 50%, transparent); }
+  .post-text-only p { font-family: var(--font-kr-serif); font-size: 15px; line-height: 1.9; color: var(--text); font-weight: 400; position: relative; z-index: 1; }
+  .corner-tl, .corner-br { position: absolute; width: 20px; height: 20px; opacity: 0.4; }
+  .corner-tl { top: 12px; left: 12px; border-top: 1px solid var(--sunset); border-left: 1px solid var(--sunset); }
+  .corner-br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--ember-dim); border-right: 1px solid var(--ember-dim); }
+
+  .post-text-poem { font-family: var(--font-kr-serif); font-size: 13px; line-height: 2.1; color: var(--text); text-align: center; padding: 48px 28px; background: radial-gradient(ellipse at 50% 20%, rgba(107,58,90,0.15), transparent 60%), linear-gradient(180deg, #160f12, #1a1214); border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+  .post-image { width: 100%; aspect-ratio: 1/1; background: var(--surface); position: relative; overflow: hidden; }
+
+  .post-actions { display: flex; align-items: center; padding: 10px 14px 6px; gap: 14px; }
+  .post-actions svg { width: 22px; height: 22px; color: var(--text); cursor: pointer; transition: color 0.15s; }
+  .post-actions svg:hover { color: var(--sunset); }
+  .post-actions .spacer { flex: 1; }
+  .post-stats { padding: 0 14px; font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); letter-spacing: 0.04em; }
+  .post-caption { padding: 6px 14px 0; font-size: 13px; line-height: 1.6; color: var(--text); }
+  .post-caption .handle { font-family: var(--font-mono); font-size: 12px; margin-right: 6px; }
+  .post-comments-link { padding: 5px 14px 0; font-size: 12px; color: var(--text-mute); cursor: pointer; }
+  .post-time { padding: 5px 14px 14px; font-size: 10px; color: var(--text-faint); font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ── POST DETAIL ── */
+  .detail-head { position: sticky; top: 0; z-index: 5; background: var(--bg-app); height: 52px; padding: 0 14px; display: flex; align-items: center; border-bottom: 1px solid var(--border-soft); gap: 10px; }
+  .detail-section-label { padding: 14px 16px 8px; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); letter-spacing: 0.2em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+  .detail-section-label .line { flex: 1; height: 1px; background: var(--border-soft); }
+  .detail-section-label.echo-label { color: var(--ember-dim); }
+
+  .comment { display: flex; gap: 10px; padding: 10px 16px; align-items: flex-start; }
+  .comment.echo { background: linear-gradient(90deg, rgba(196,92,40,0.07), transparent 80%); border-left: 2px solid var(--sunset-dim); padding-left: 14px; }
+  .comment-body { flex: 1; min-width: 0; }
+  .comment-handle { font-family: var(--font-mono); font-size: 11px; color: var(--text); margin-right: 6px; }
+  .comment-text { font-size: 13px; line-height: 1.55; color: var(--text); word-break: break-word; }
+  .comment-meta { font-size: 10px; color: var(--text-faint); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; }
+
+  .comment-input-bar { padding: 10px 14px; border-top: 1px solid var(--border-soft); display: flex; align-items: center; gap: 10px; background: var(--bg-app); }
+  .comment-input-bar input { flex: 1; background: transparent; border: none; color: var(--text); font-family: var(--font-kr); font-size: 12px; outline: none; }
+  .comment-input-bar input::placeholder { color: var(--text-faint); }
+  .comment-input-bar .send { color: var(--sunset); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; }
+
+  /* ── SEARCH ── */
+  .search-bar-wrap { position: sticky; top: 0; z-index: 5; background: var(--bg-app); padding: 14px 16px; border-bottom: 1px solid var(--border-soft); }
+  .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+  .search-bar svg { width: 14px; height: 14px; color: var(--text-mute); }
+  .search-bar input { flex: 1; background: transparent; border: none; color: var(--text); font-family: var(--font-kr); font-size: 13px; outline: none; }
+  .search-bar input::placeholder { color: var(--text-faint); }
+  .search-tabs { display: flex; border-bottom: 1px solid var(--border-soft); padding: 0 16px; }
+  .search-tab { padding: 12px 14px; font-family: var(--font-mono); font-size: 11px; color: var(--text-mute); letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid transparent; margin-bottom: -1px; }
+  .search-tab.active { color: var(--text); border-bottom-color: var(--sunset); }
+  .search-result-count { padding: 12px 16px 4px; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; }
+  .search-result { padding: 14px 16px; border-bottom: 1px solid var(--border-soft); cursor: pointer; display: flex; gap: 12px; transition: background 0.15s; }
+  .search-result:hover { background: var(--surface); }
+  .search-result.featured { background: linear-gradient(90deg, rgba(196,92,40,0.06), transparent); border-left: 2px solid var(--sunset-dim); padding-left: 14px; }
+  .search-result-content { flex: 1; min-width: 0; }
+  .search-result .handle { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+  .search-result .preview { font-size: 12px; color: var(--text-mute); line-height: 1.5; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .search-result .stats { margin-top: 6px; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); }
+  .search-result .ribbon { font-family: var(--font-mono); font-size: 9px; color: var(--sunset); letter-spacing: 0.2em; margin-bottom: 3px; text-transform: uppercase; }
+
+  /* ── CHAT LIST ── */
+  .chats-header-block { position: sticky; top: 0; z-index: 5; background: var(--bg-app); padding: 18px 18px 12px; border-bottom: 1px solid var(--border-soft); }
+  .chats-header-block h2 { font-family: var(--font-kr-serif); font-size: 22px; font-weight: 500; color: var(--text); }
+  .chats-header-block p { font-size: 11px; color: var(--text-faint); margin-top: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; }
+  .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; border-bottom: 1px solid var(--border-soft); transition: background 0.15s; }
+  .chat-list-item:hover { background: var(--surface); }
+  .avatar.cluster { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+  .avatar.cluster .a1, .avatar.cluster .a2 { position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--bg-app); overflow: hidden; }
+  .avatar.cluster .a1 { top: 0; left: 0; }
+  .avatar.cluster .a2 { bottom: 0; right: 0; }
+  .chat-list-meta { flex: 1; min-width: 0; }
+  .chat-list-meta .name { font-family: var(--font-kr-serif); font-size: 14px; color: var(--text); font-weight: 500; margin-bottom: 4px; }
+  .chat-list-meta .preview { font-size: 12px; color: var(--text-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-list-side { text-align: right; flex-shrink: 0; }
+  .chat-list-side .time { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); }
+  .chat-list-side .badge { margin-top: 6px; display: inline-block; background: var(--sunset); color: #0c0608; font-family: var(--font-mono); font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; }
+
+  /* ── CHAT ROOM ── */
+  .chat-room-head { position: sticky; top: 0; z-index: 5; background: var(--bg-app); height: 52px; padding: 0 12px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 10px; }
+  .chat-room-head::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(196,92,40,0.25) 50%, transparent); }
+  .chat-room-head .name { font-family: var(--font-kr-serif); font-size: 14px; color: var(--text); flex: 1; }
+  .chat-room-head .name small { display: block; font-family: var(--font-mono); font-size: 9px; color: var(--text-faint); letter-spacing: 0.1em; margin-top: 2px; font-weight: normal; }
+
+  .chat-room-body { padding: 14px 12px; }
+  .chat-day-divider { text-align: center; margin: 18px 0; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); letter-spacing: 0.2em; text-transform: uppercase; position: relative; }
+  .chat-day-divider::before, .chat-day-divider::after { content: ""; display: inline-block; width: 50px; height: 1px; background: var(--border-soft); vertical-align: middle; margin: 0 12px; }
+
+  /* ── 익명 메시지 행 ── 모두 왼쪽 정렬, 핸들 없음 */
+  .msg-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-end; }
+  .msg-row.same .avatar { visibility: hidden; }
+  .msg-cluster { display: flex; flex-direction: column; gap: 3px; max-width: 76%; }
+
+  .bubble {
+    padding: 9px 13px; border-radius: 16px;
+    background: var(--surface-2); color: var(--text);
+    font-size: 13px; line-height: 1.55; word-break: break-word;
+  }
+  /* 결정적 메시지 */
+  .bubble.key-msg {
+    font-family: var(--font-kr-serif); font-style: italic; font-size: 14px; line-height: 1.8;
+    border: 1px solid rgba(196,92,40,0.5);
+    background: radial-gradient(ellipse at 50% 0%, rgba(196,92,40,0.12), transparent 70%), linear-gradient(135deg, #2a1812, #1a100c);
+    position: relative;
+  }
+  .bubble.key-msg::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,144,80,0.6), transparent); }
+
+  .msg-time { font-family: var(--font-mono); font-size: 9px; color: var(--text-faint); margin: 0 6px; letter-spacing: 0.05em; align-self: flex-end; padding-bottom: 4px; }
+
+  .system-msg { text-align: center; margin: 14px 0; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); letter-spacing: 0.1em; line-height: 1.6; }
+  .system-msg .pin { display: inline-block; padding: 6px 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+
+  .chat-input-bar { padding: 10px 12px; border-top: 1px solid var(--border-soft); display: flex; align-items: center; gap: 8px; background: var(--bg-app); }
+  .chat-input-bar .input-pill { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 8px 14px; color: var(--text-faint); font-size: 12px; }
+  .chat-input-bar svg { width: 22px; height: 22px; color: var(--text-mute); }
+
+  /* ── PROFILE (범용) ── */
+  .profile-head { padding: 22px 20px 14px; display: flex; gap: 18px; align-items: center; }
+  .profile-numbers { flex: 1; display: flex; justify-content: space-around; text-align: center; }
+  .profile-numbers div { display: flex; flex-direction: column; gap: 2px; }
+  .profile-numbers .n { font-family: var(--font-kr-serif); font-size: 18px; font-weight: 500; color: var(--text); }
+  .profile-numbers .l { font-family: var(--font-mono); font-size: 9px; color: var(--text-mute); letter-spacing: 0.15em; text-transform: uppercase; }
+  .profile-name { padding: 0 20px 4px; font-family: var(--font-mono); font-size: 13px; color: var(--text); }
+  .profile-name span { font-family: var(--font-kr-serif); color: var(--text-mute); margin-left: 8px; font-size: 12px; }
+  .profile-bio { padding: 4px 20px 16px; font-size: 12px; color: var(--text-mute); line-height: 1.8; font-family: var(--font-kr-serif); }
+  .profile-bio .quote { color: var(--sunset); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-top: 8px; }
+  .profile-actions { padding: 0 20px 16px; display: flex; gap: 8px; }
+  .profile-actions button { flex: 1; padding: 8px; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: var(--font-kr); font-size: 12px; border-radius: 6px; cursor: pointer; }
+  .profile-tabs { display: flex; border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+  .profile-tab { flex: 1; padding: 12px; text-align: center; color: var(--text-mute); cursor: pointer; border-bottom: 1px solid transparent; margin-bottom: -1px; }
+  .profile-tab svg { width: 18px; height: 18px; }
+  .profile-tab.active { color: var(--text); border-bottom-color: var(--sunset); }
+  .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .grid-item { aspect-ratio: 1/1; background: var(--surface); cursor: pointer; overflow: hidden; position: relative; }
+  .grid-item.text-post { display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font-family: var(--font-kr-serif); font-size: 9px; color: var(--text-mute); line-height: 1.6; background: linear-gradient(180deg, #1a1010, #100a0c); }
+  .grid-item.text-post.featured { border: 1px solid var(--sunset-dim); color: var(--text); background: linear-gradient(180deg, #201410, #160c0a); }
+
+  /* ── TAB BAR ── */
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 64px; border-top: 1px solid var(--border-soft); background: var(--bg-app); display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px; z-index: 10; }
+  .tab-bar::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(196,92,40,0.2) 50%, transparent); }
+  .tab { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-mute); cursor: pointer; padding: 8px; transition: color 0.15s; }
+  .tab svg { width: 24px; height: 24px; }
+  .tab.active { color: var(--sunset); }
+  .tab.profile.active .avatar { box-shadow: 0 0 0 1.5px var(--sunset); border-radius: 50%; }
+
+  /* ── IMAGE PATTERNS ── */
+  .pattern-sunset { background: radial-gradient(ellipse at 50% 0%, rgba(196,92,40,0.35), transparent 60%), radial-gradient(ellipse at 30% 80%, rgba(107,58,90,0.2), transparent 50%), linear-gradient(180deg, #1e1010, #100a0c); }
+  .pattern-track { background: linear-gradient(180deg, #130d0f, #1c1214); position: relative; overflow: hidden; }
+  .pattern-track::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 48%, rgba(196,92,40,0.1) 49%, rgba(196,92,40,0.1) 51%, transparent 52%), repeating-linear-gradient(0deg, rgba(237,232,223,0.03) 0, rgba(237,232,223,0.03) 1px, transparent 1px, transparent 14px); }
+  .pattern-track::after { content: "終點"; position: absolute; bottom: 14px; right: 14px; font-family: var(--font-logo); font-size: 16px; color: rgba(196,92,40,0.25); }
+  .pattern-window { background: linear-gradient(180deg, #160f12, #100a0e); position: relative; }
+  .pattern-window::before { content: ""; position: absolute; top: 20%; left: 20%; width: 60%; height: 55%; border: 1px solid rgba(212,144,80,0.2); background: radial-gradient(ellipse at 50% 30%, rgba(196,92,40,0.12), transparent 80%); }
+  .pattern-dusk { background: radial-gradient(ellipse at 50% 40%, rgba(107,58,90,0.3), transparent 70%), linear-gradient(180deg, #1a1020, #0e0810); }
+
+  /* ── SILHOUETTE ── */
+  .sil { width: 100%; height: 100%; display: block; }
+
+
+
+  
+  /* 멤버 프로필 표 */
+  .members-section { padding: 24px 18px; }
+  .members-title {
+    font-family: var(--font-kr-serif);
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    padding-bottom: 14px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+  }
+  .members-title::after {
+    content: ""; position: absolute;
+    bottom: -1px; left: 0; width: 40%; height: 1px;
+    background: linear-gradient(90deg, var(--sunset-dim), transparent);
+  }
+  .members-list { display: flex; flex-direction: column; gap: 2px; }
+  .member-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--border-soft);
+    gap: 8px;
+  }
+  .member-row:last-child { border-bottom: none; }
+  .m-name {
+    font-family: var(--font-kr-serif);
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .m-job {
+    font-family: var(--font-kr);
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .m-birth {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  /* 알림 점 (업데이트 표시) */
+  .tab { position: relative; }
+  .tab .dot-update {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    margin-left: 4px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--sunset);
+    box-shadow: 0 0 8px rgba(196, 92, 40, 0.6);
+    z-index: 2;
+  }
+  .tab.profile .dot-update {
+    top: 6px;
+    left: 50%;
+    margin-left: 6px;
+  }
+
+  @media (max-height: 700px) {
+    .page-meta { display: none; }
+    .phone { max-height: calc(100vh - 32px); }
+    .page { padding: 16px; gap: 0; }
+  }
+  @media (max-width: 460px) {
+    .phone { width: calc(100vw - 32px); border-radius: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="page-meta">Tamiste <span class="dot"></span> private build v0.4.3 <span class="dot"></span> 5,128,402 users</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <div class="status-bar">
+    <span id="status-time">--:--</span>
+    <div class="right">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13h2v8H3zM7 9h2v12H7zM11 5h2v16h-2zM15 9h2v12h-2zM19 13h2v8h-2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 9c5.5-5 14.5-5 20 0M5 12c4-3.5 10-3.5 14 0M8 15c2.5-2 5.5-2 8 0M12 18l.01.01"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/><rect x="4" y="9" width="10" height="6" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="app-header">
+    <div class="logo">Tamiste</div>
+    <div class="header-actions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- ▸ HOME -->
+    <section class="screen active" data-screen="home">
+      <div class="story-rail">
+        <div class="story">
+          <div class="story-ring"><div class="story-avatar" style="background:var(--surface-3);">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_01</span>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-avatar">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_02</span>
+        </div>
+        <div class="story">
+          <div class="story-ring"><div class="story-avatar">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_03</span>
+        </div>
+        <div class="story">
+          <div class="story-ring viewed"><div class="story-avatar">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_04</span>
+        </div>
+        <div class="story">
+          <div class="story-ring viewed"><div class="story-avatar">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_05</span>
+        </div>
+        <div class="story">
+          <div class="story-ring viewed"><div class="story-avatar">
+            <svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg>
+          </div></div>
+          <span>unknown_06</span>
+        </div>
+      </div>
+
+      <article class="post" data-open-post="hwa">
+        <div class="post-head">
+          <div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="post-meta"><div class="handle">unknown_01</div><div class="sub">xx · 종점</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-body">
+          <div class="post-text-only">
+            <div class="corner-tl"></div><div class="corner-br"></div>
+            <p>『해피타임』은 대중 어필을 노린 졸작이었다.<br>메아리 스튜디오의 매력은 1밀리미터도 나와 있지 않다.</p>
+          </div>
+        </div>
+        <div class="post-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span class="spacer"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="post-stats">좋아요 11 · 댓글 87</div>
+        <div class="post-caption"><span class="handle">unknown_01</span>아무도 읽지 않을 거라고 생각하고 썼다.</div>
+        <div class="post-comments-link">댓글 87개 모두 보기</div>
+        <div class="post-time">xx</div>
+      </article>
+
+      <article class="post">
+        <div class="post-head">
+          <div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#160e12"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="post-meta"><div class="handle">anon_1144</div><div class="sub">xx시간</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-body">
+          <div class="post-text-poem">마지막 칸에 앉으면<br>모두가 지나간 자리들이<br>이쪽으로 흘러온다<br><br>나는 그 모든 흔적의<br>도착지였을 뿐이다</div>
+        </div>
+        <div class="post-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span class="spacer"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="post-stats">좋아요 1,242 · 댓글 31</div>
+        <div class="post-time">xx</div>
+      </article>
+
+      <article class="post">
+        <div class="post-head">
+          <div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="post-meta"><div class="handle">anon_studio</div><div class="sub">광고</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-body"><div class="post-image pattern-sunset"></div></div>
+        <div class="post-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span class="spacer"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="post-stats">좋아요 18,302 · 댓글 421</div>
+        <div class="post-caption"><span class="handle">anon_studio</span>『해피타임』 — 메아리 스튜디오 신작. 전국 극장 절찬 상영 중.</div>
+        <div class="post-time">xx</div>
+      </article>
+
+      <article class="post">
+        <div class="post-head">
+          <div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#14101a"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="post-meta"><div class="handle">anon_9907</div><div class="sub">xx시간</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-body"><div class="post-image pattern-dusk"></div></div>
+        <div class="post-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span class="spacer"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="post-stats">좋아요 87 · 댓글 4</div>
+        <div class="post-caption"><span class="handle">anon_9907</span>창문 너머 아무도 없는 풍경이 가장 평온하다.</div>
+        <div class="post-time">xx</div>
+      </article>
+    </section>
+
+    <!-- ▸ POST DETAIL -->
+    <section class="screen" data-screen="post-detail">
+      <div class="detail-head">
+        <button class="back-btn" data-back="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>
+          게시물
+        </button>
+      </div>
+      <article class="post" style="border-bottom:none;">
+        <div class="post-head">
+          <div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="post-meta"><div class="handle">unknown_01</div><div class="sub">xx · 종점</div></div>
+          <div class="post-more">···</div>
+        </div>
+        <div class="post-text-only">
+          <div class="corner-tl"></div><div class="corner-br"></div>
+          <p>『해피타임』은 대중 어필을 노린 졸작이었다.<br>메아리 스튜디오의 매력은 1밀리미터도 나와 있지 않다.</p>
+        </div>
+        <div class="post-actions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span class="spacer"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="post-stats">좋아요 11 · 댓글 87</div>
+      </article>
+
+      <div style="border-top:1px solid var(--border-soft);">
+        <div class="detail-section-label">반응 <span class="line"></span> 비판적</div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#141018"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_2841</span><span class="comment-text">진심 한 마디도 동의 안 됨. 보고 말한 거 맞나요?</span><div class="comment-meta">xx시간 전 · 좋아요 24</div></div></div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_5103</span><span class="comment-text">메아리 영화 중에 제일 좋았는데... 이렇게 단정적으로 쓰실 일은 아닌 듯.</span><div class="comment-meta">xx시간 전 · 좋아요 19</div></div></div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_7726</span><span class="comment-text">해피타임이 졸작이면 다른 작품들은 뭐가 됨 ㅋㅋ</span><div class="comment-meta">xx시간 전 · 좋아요 17</div></div></div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#141018"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_4019</span><span class="comment-text">동의 안 함. 대중성과 작품성을 동시에 잡은 좋은 시도였다고 봐요.</span><div class="comment-meta">xx시간 전 · 좋아요 12</div></div></div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#120e14"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_3358</span><span class="comment-text">작품 보지도 않고 글 쓰신 듯</span><div class="comment-meta">xx시간 전 · 좋아요 9</div></div></div>
+        <div class="comment"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">anon_6294</span><span class="comment-text">비판은 좋지만 너무 가혹한 듯요.</span><div class="comment-meta">xx시간 전 · 좋아요 6</div></div></div>
+
+        <div class="detail-section-label echo-label">동조 <span class="line"></span> 5</div>
+        <div class="comment echo"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">unknown_02</span><span class="comment-text">같은 생각이에요. 메아리 특유의 적막이 너무 옅어졌더라고요. 이렇게 말해주는 분이 있어서 다행이에요.</span><div class="comment-meta">xx분 전 · 좋아요 3</div></div></div>
+        <div class="comment echo"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">unknown_03</span><span class="comment-text">...저도 그렇게 느꼈어요. 처음으로 동의하는 글 보네요.</span><div class="comment-meta">xx분 전 · 좋아요 2</div></div></div>
+        <div class="comment echo"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">unknown_04</span><span class="comment-text">동감입니다. 「비애의 초승달」이 그리워지는 작품이었어요.</span><div class="comment-meta">xx분 전 · 좋아요 2</div></div></div>
+        <div class="comment echo"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">unknown_05</span><span class="comment-text">정확하시네요. 진짜 메아리 같지 않은 영화였음.</span><div class="comment-meta">xx분 전 · 좋아요 1</div></div></div>
+        <div class="comment echo"><div class="avatar sm"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="comment-body"><span class="comment-handle">unknown_06</span><span class="comment-text">저만 그런 줄 알았는데. 적어주셔서 감사합니다.</span><div class="comment-meta">xx분 전 · 좋아요 1</div></div></div>
+      </div>
+
+      <div class="comment-input-bar">
+        <div class="avatar sm" style="background:var(--surface-3);"></div>
+        <input placeholder="댓글 달기..." disabled>
+        <span class="send">보내기</span>
+      </div>
+    </section>
+
+    <!-- ▸ SEARCH -->
+    <section class="screen" data-screen="search">
+      <div class="search-bar-wrap"><div class="search-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input value="해피타임" placeholder="검색"></div></div>
+      <div class="search-tabs"><div class="search-tab active">게시물</div><div class="search-tab">계정</div><div class="search-tab">태그</div></div>
+      <div class="search-result-count">결과 1,247건 · 최신순</div>
+      <div class="search-result featured" data-open-post="hwa"><div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="search-result-content"><div class="ribbon">알고리즘 추천</div><div class="handle">unknown_01</div><div class="preview">『해피타임』은 대중 어필을 노린 졸작이었다. 메아리 스튜디오의 매력은 1밀리미터도 나와 있지 않다.</div><div class="stats">xx시간 전 · 좋아요 11 · 댓글 87</div></div></div>
+      <div class="search-result"><div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="search-result-content"><div class="handle">anon_studio</div><div class="preview">『해피타임』 — 메아리 스튜디오 신작. 전국 극장 절찬 상영 중.</div><div class="stats">xx.xx · 좋아요 18,302 · 댓글 421</div></div></div>
+      <div class="search-result"><div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="search-result-content"><div class="handle">anon_8862</div><div class="preview">해피타임 보고 옴. 메아리 스튜디오가 드디어 따뜻한 영화를 만들었다. 인생작 갱신.</div><div class="stats">xx시간 전 · 좋아요 2,041 · 댓글 88</div></div></div>
+      <div class="search-result"><div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#160e12"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="search-result-content"><div class="handle">anon_5103</div><div class="preview">해피타임 ost 3번 트랙 들으면서 울었다. 이게 영화의 힘이지.</div><div class="stats">xx시간 전 · 좋아요 947 · 댓글 24</div></div></div>
+      <div class="search-result"><div class="avatar"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div><div class="search-result-content"><div class="handle">anon_7726</div><div class="preview">해피타임 두 번째 관람. 처음에 놓친 것들이 이제야 보인다.</div><div class="stats">1xx시간 전 · 좋아요 612 · 댓글 11</div></div></div>
+    </section>
+
+    <!-- ▸ CHATS -->
+    <section class="screen" data-screen="chats">
+      <div class="chats-header-block"><h2>메시지</h2><p>1개의 대화</p></div>
+      <div class="chat-list-item" >
+        <div class="avatar cluster">
+          <div class="a1"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+          <div class="a2"><svg class="sil" viewBox="0 0 60 60"><rect width="60" height="60" fill="#1a1418"/><circle cx="30" cy="21" r="10" fill="#3a3438"/><path d="M10 62 Q30 40 50 62Z" fill="#3a3438"/></svg></div>
+        </div>
+        <div class="chat-list-meta"><div class="name">메아리 채팅</div><div class="preview">한 번 전원이 함께 이야기 해보고 싶습니다.</div></div>
+        <div class="chat-list-side"><div class="time">xx분</div><div class="badge">5</div></div>
+      </div>
+    </section>
+
+    
+
+    <!-- ▸ PROFILE (범용) -->
+    <section class="screen" data-screen="profile">
+      <div class="profile-head">
+        <div class="avatar lg" style="border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface-3);">
+          <svg viewBox="0 0 80 80" width="80" height="80">
+            <rect width="80" height="80" fill="var(--surface-3)"/>
+            <circle cx="40" cy="30" r="14" fill="var(--border)"/>
+            <path d="M14 80 Q40 54 66 80Z" fill="var(--border)"/>
+          </svg>
+        </div>
+        <div class="profile-numbers">
+          <div><div class="n">—</div><div class="l">게시물</div></div>
+          <div><div class="n">—</div><div class="l">팔로워</div></div>
+          <div><div class="n">—</div><div class="l">팔로잉</div></div>
+        </div>
+      </div>
+      <div class="profile-name">익명<span style="color:var(--text-faint);font-size:11px;letter-spacing:0.1em;">tamiste user</span></div>
+      <div class="profile-bio">
+        인생의 종점을 컨셉으로 한 SNS.<br>현실에 지친 사람들의 마지막 안식처.
+        <span class="quote">— 종점에서 만나요</span>
+      </div>
+      <div class="profile-actions"><button>프로필 편집</button><button>공유하기</button></div>
+      <div class="profile-tabs">
+        <div class="profile-tab active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+        <div class="profile-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="profile-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></div>
+      </div>
+      <div class="members-section">
+        <div class="members-title">메아리 멤버의 프로필</div>
+        <div class="members-list">
+          <div class="member-row">
+            <span class="m-name">윤미아</span>
+            <span class="m-job">아이돌</span>
+            <span class="m-birth">2003. 12. 08</span>
+          </div>
+          <div class="member-row">
+            <span class="m-name">이용산</span>
+            <span class="m-job">대학생</span>
+            <span class="m-birth">2002. 10. 20</span>
+          </div>
+          <div class="member-row">
+            <span class="m-name">김성수</span>
+            <span class="m-job">회사원</span>
+            <span class="m-birth">1996. 10. 07</span>
+          </div>
+          <div class="member-row">
+            <span class="m-name">박신길</span>
+            <span class="m-job">변호사</span>
+            <span class="m-birth">1990. 06. 28</span>
+          </div>
+          <div class="member-row">
+            <span class="m-name">정혜화</span>
+            <span class="m-job">고등학생</span>
+            <span class="m-birth">2005. 08. 31</span>
+          </div>
+          <div class="member-row">
+            <span class="m-name">서강남</span>
+            <span class="m-job">의사</span>
+            <span class="m-birth">1986. 04. 10</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <nav class="tab-bar">
+    <div class="tab active" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div class="tab" data-tab="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+    <div class="tab" data-tab="post-create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
+    <div class="tab" data-tab="chats"><span class="dot-update"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+    <div class="tab profile" data-tab="profile">
+      <span class="dot-update"></span>
+      <div class="avatar" style="width:28px;height:28px;background:var(--surface-3);">
+        <svg viewBox="0 0 28 28" width="28" height="28"><rect width="28" height="28" rx="14" fill="var(--surface-3)"/><circle cx="14" cy="10" r="5" fill="var(--border)"/><path d="M5 28 Q14 19 23 28Z" fill="var(--border)"/></svg>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<div class="page-meta">인생의 종점을 컨셉으로 한 SNS <span class="dot"></span> private build <span class="dot"></span> in-game asset</div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  console.log('%c[Tamiste] %cv0.4.2 // single dev build','color:#c45c28;font-weight:bold;','color:#9a8880;');
+  console.warn('[Tamiste] TODO — auth token leak on /api/v1/messages.json. fix before release.');
+  var screens=document.querySelectorAll('[data-screen]'),tabs=document.querySelectorAll('.tab'),content=document.getElementById('content'),stack=['home'];
+  function show(n){screens.forEach(function(s){s.classList.toggle('active',s.dataset.screen===n);});tabs.forEach(function(t){t.classList.toggle('active',t.dataset.tab===n);});content.scrollTop=0;if(n==='chat-room')setTimeout(function(){content.scrollTop=content.scrollHeight;},40);}
+  function go(n){if(stack[stack.length-1]!==n)stack.push(n);show(n);}
+  tabs.forEach(function(t){t.addEventListener('click',function(){var n=t.dataset.tab;if(n==='post-create')return;stack=[n];show(n);});});
+  document.querySelectorAll('[data-open-post]').forEach(function(el){el.addEventListener('click',function(){go('post-detail');});});
+  
+  document.querySelectorAll('[data-back]').forEach(function(el){el.addEventListener('click',function(){var t=el.dataset.back;while(stack.length>1&&stack[stack.length-1]!==t)stack.pop();show(t);});});
+  
+  show('home');
+
+  // 현재 시각 표시
+  function updateClock(){
+    var now = new Date();
+    var h = now.getHours().toString().padStart(2,'0');
+    var m = now.getMinutes().toString().padStart(2,'0');
+    var el = document.getElementById('status-time');
+    if(el) el.textContent = h + ':' + m;
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+})();
+</script>
+</body>
+</html>
