@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Tamiste</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,9 @@
     background: var(--bg-page); color: var(--text);
     font-family: var(--font-kr); font-weight: 300;
     -webkit-font-smoothing: antialiased;
-    height: 100vh; overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
   body::before {
     content: ""; position: fixed; inset: 0;
@@ -66,6 +68,7 @@
   .page {
     position: relative; z-index: 2;
     height: 100vh;
+    height: 100dvh;
     display: flex; align-items: center; justify-content: center;
     padding: 16px 16px; flex-direction: column; gap: 12px;
     overflow: hidden;
@@ -81,6 +84,7 @@
     width: 400px;
     height: 860px;
     max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px);
     background: var(--bg-app);
     border: 1px solid var(--border); border-radius: 44px;
     box-shadow: 0 0 0 8px #090506, 0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(196,92,40,0.06), inset 0 0 0 1px rgba(255,255,255,0.025);
@@ -117,6 +121,7 @@
     position: absolute;
     top: 96px;   /* status-bar(44) + app-header(52) */
     bottom: 64px; /* tab-bar height */
+    bottom: calc(64px + env(safe-area-inset-bottom)); /* + 홈 인디케이터 / 제스처 바 */
     left: 0; right: 0;
     overflow-y: auto; overflow-x: hidden;
   }
@@ -285,7 +290,7 @@
   .grid-item.text-post.featured { border: 1px solid var(--sunset-dim); color: var(--text); background: linear-gradient(180deg, #201410, #160c0a); }
 
   /* ── TAB BAR ── */
-  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 64px; border-top: 1px solid var(--border-soft); background: var(--bg-app); display: flex; align-items: center; justify-content: space-around; padding-bottom: 8px; z-index: 10; }
+  .tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: calc(64px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border-soft); background: var(--bg-app); display: flex; align-items: center; justify-content: space-around; padding-bottom: calc(8px + env(safe-area-inset-bottom)); z-index: 10; }
   .tab-bar::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(196,92,40,0.2) 50%, transparent); }
   .tab { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-mute); cursor: pointer; padding: 8px; transition: color 0.15s; }
   .tab svg { width: 24px; height: 24px; }
@@ -307,7 +312,7 @@
 
   @media (max-height: 700px) {
     .page-meta { display: none; }
-    .phone { max-height: calc(100vh - 32px); }
+    .phone { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); }
     .page { padding: 16px; gap: 0; }
   }
   @media (max-width: 460px) {
@@ -391,7 +396,7 @@
         <div class="post-body">
           <div class="post-text-only">
             <div class="corner-tl"></div><div class="corner-br"></div>
-            <p>『해피타임』은 대중성만 노린 졸작이다.<br>메아리 스튜디오의 매력은 1밀리미터도 느껴지지 않는다.</p>
+            <p>『해피타임』은 대중 어필을 노린 졸작이었다.<br>메아리 스튜디오의 매력은 1밀리미터도 나와 있지 않다.</p>
           </div>
         </div>
         <div class="post-actions">
